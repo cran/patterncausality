@@ -1,7 +1,7 @@
 Package: patterncausality
 Type: Package
 Title: Pattern Causality Algorithm
-Version: 0.1.1
+Version: 0.1.2
 Authors@R: c( person("Stavros", "Stavroglou", role = c("aut"),
                      email = "stavros.k.stavroglou@gmail.com",
                      comment = c(ORCID = "0000-0003-3931-0391")),
@@ -26,9 +26,9 @@ Config/testthat/edition: 3
 RoxygenNote: 7.3.2
 VignetteBuilder: knitr
 NeedsCompilation: no
-Packaged: 2024-08-18 07:16:17 UTC; pc2
+Packaged: 2024-08-20 15:10:32 UTC; pc2
 Author: Stavros Stavroglou [aut] (<https://orcid.org/0000-0003-3931-0391>),
   Athanasios Pantelous [aut] (<https://orcid.org/0000-0001-5738-1471>),
   Hui Wang [aut, cre] (<https://orcid.org/0009-0006-0095-0243>)
 Repository: CRAN
-Date/Publication: 2024-08-18 08:40:02 UTC
+Date/Publication: 2024-08-22 09:00:02 UTC

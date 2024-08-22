@@ -42,7 +42,7 @@ ggplot(df) +
 ## -----------------------------------------------------------------------------
 X <- stock$AAPL.Close
 Y <- stock$MSFT.Close
-pc <- pc_lightweight(X, Y, E = 3, tau = 2, metric = "euclidean", h = 1, weighted = TRUE, tpb=FALSE)
+pc <- pcLightweight(X, Y, E = 3, tau = 2, metric = "euclidean", h = 1, weighted = TRUE, tpb=FALSE)
 print(pc)
 
 ## -----------------------------------------------------------------------------
@@ -65,7 +65,7 @@ ggplot(df, aes(x = name, y = val, fill = name)) +
 ## ----eval=FALSE---------------------------------------------------------------
 #  X <- stock$AAPL.Close
 #  Y <- stock$MSFT.Close
-#  detail <- pc_fulldetails(X, Y, E = 3, tau = 2, metric = "euclidean", h = 1, weighted = TRUE)
+#  detail <- pcFullDetails(X, Y, E = 3, tau = 2, metric = "euclidean", h = 1, weighted = TRUE)
 #  predict_status <- detail$spectrumOfCausalityPredicted
 #  real_status <- detail$spectrumOfCausalityReal
 #  names(detail)

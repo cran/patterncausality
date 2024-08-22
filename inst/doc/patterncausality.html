@@ -10,7 +10,7 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-<meta name="author" content="Hui Wang" />
+<meta name="author" content="Stavros Stavroglou, Athanasios Pantelous, Hui Wang" />
 
 
 <title>Introduction to patterncausality</title>
@@ -338,7 +338,8 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 
 
 <h1 class="title toc-ignore">Introduction to patterncausality</h1>
-<h4 class="author">Hui Wang</h4>
+<h4 class="author">Stavros Stavroglou, Athanasios Pantelous, Hui
+Wang</h4>
 
 
 
@@ -379,7 +380,7 @@ import data from the <strong>yahooo</strong> api.</p>
 <p>After that, calculate the causality of each status.</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a>X <span class="ot">&lt;-</span> stock<span class="sc">$</span>AAPL.Close</span>
 <span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>Y <span class="ot">&lt;-</span> stock<span class="sc">$</span>MSFT.Close</span>
-<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a>pc <span class="ot">&lt;-</span> <span class="fu">pc_lightweight</span>(X, Y, <span class="at">E =</span> <span class="dv">3</span>, <span class="at">tau =</span> <span class="dv">2</span>, <span class="at">metric =</span> <span class="st">&quot;euclidean&quot;</span>, <span class="at">h =</span> <span class="dv">1</span>, <span class="at">weighted =</span> <span class="cn">TRUE</span>, <span class="at">tpb=</span><span class="cn">FALSE</span>)</span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a>pc <span class="ot">&lt;-</span> <span class="fu">pcLightweight</span>(X, Y, <span class="at">E =</span> <span class="dv">3</span>, <span class="at">tau =</span> <span class="dv">2</span>, <span class="at">metric =</span> <span class="st">&quot;euclidean&quot;</span>, <span class="at">h =</span> <span class="dv">1</span>, <span class="at">weighted =</span> <span class="cn">TRUE</span>, <span class="at">tpb=</span><span class="cn">FALSE</span>)</span>
 <span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a><span class="fu">print</span>(pc)</span>
 <span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a><span class="co">#&gt;       total  positive  negative      dark</span></span>
 <span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a><span class="co">#&gt; 1 0.2698665 0.3881279 0.1369863 0.4748858</span></span></code></pre></div>
@@ -406,7 +407,7 @@ import data from the <strong>yahooo</strong> api.</p>
 <p>The details could be found with following code.</p>
 <div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a>X <span class="ot">&lt;-</span> stock<span class="sc">$</span>AAPL.Close</span>
 <span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a>Y <span class="ot">&lt;-</span> stock<span class="sc">$</span>MSFT.Close</span>
-<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a>detail <span class="ot">&lt;-</span> <span class="fu">pc_fulldetails</span>(X, Y, <span class="at">E =</span> <span class="dv">3</span>, <span class="at">tau =</span> <span class="dv">2</span>, <span class="at">metric =</span> <span class="st">&quot;euclidean&quot;</span>, <span class="at">h =</span> <span class="dv">1</span>, <span class="at">weighted =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a>detail <span class="ot">&lt;-</span> <span class="fu">pcFullDetails</span>(X, Y, <span class="at">E =</span> <span class="dv">3</span>, <span class="at">tau =</span> <span class="dv">2</span>, <span class="at">metric =</span> <span class="st">&quot;euclidean&quot;</span>, <span class="at">h =</span> <span class="dv">1</span>, <span class="at">weighted =</span> <span class="cn">TRUE</span>)</span>
 <span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a>predict_status <span class="ot">&lt;-</span> detail<span class="sc">$</span>spectrumOfCausalityPredicted</span>
 <span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a>real_status <span class="ot">&lt;-</span> detail<span class="sc">$</span>spectrumOfCausalityReal</span>
 <span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a><span class="fu">names</span>(detail)</span></code></pre></div>
