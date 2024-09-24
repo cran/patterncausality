@@ -7,20 +7,20 @@ knitr::opts_chunk$set(
 
 ## ----message = FALSE----------------------------------------------------------
 library(patterncausality)
-data(stock)
-head(stock)
+data(DJS)
+head(DJS)
 
 ## ----echo=FALSE---------------------------------------------------------------
 library(ggplot2)
 df <- data.frame(
-  Date = as.Date(rownames(stock)),
+  Date = as.Date(DJS$Date),
   Value = c(
-    stock$AAPL.Close,
-    stock$MSFT.Close
+    DJS$Apple,
+    DJS$Microsoft
   ),
   Type = c(
-    rep("AAPL", dim(stock)[1]),
-    rep("MSFT", dim(stock)[1])
+    rep("Apple", dim(DJS)[1]),
+    rep("Microsoft", dim(DJS)[1])
   )
 )
 ggplot(df) +
@@ -29,19 +29,19 @@ ggplot(df) +
   xlab("Time") +
   ylab("Stock Price") +
   theme(
-    legend.position = c(0.1, 0.85), legend.box.background = element_rect(fill = NA, color = "black", linetype = 1), legend.key = element_blank(),
+    legend.position = c(0.25, 0.85), legend.box.background = element_rect(fill = NA, color = "black", linetype = 1), legend.key = element_blank(),
     legend.title = element_blank(), legend.background = element_blank(), axis.text = element_text(size = rel(0.8)),
     strip.text = element_text(size = rel(0.8))
   ) +
   scale_color_manual(values = c("#DC143C", "#191970"))
 
 ## ----eval=FALSE---------------------------------------------------------------
-#  dataset <- stock
+#  dataset <- DJS[,-1]
 #  parameter <- optimalParametersSearch(Emax = 5, tauMax = 5, metric = "euclidean", dataset = dataset)
 
 ## -----------------------------------------------------------------------------
-X <- stock$AAPL.Close
-Y <- stock$MSFT.Close
+X <- DJS$Apple
+Y <- DJS$Microsoft
 pc <- pcLightweight(X, Y, E = 3, tau = 2, metric = "euclidean", h = 1, weighted = TRUE, tpb=FALSE)
 print(pc)
 
@@ -63,8 +63,8 @@ ggplot(df, aes(x = name, y = val, fill = name)) +
   )
 
 ## ----eval=FALSE---------------------------------------------------------------
-#  X <- stock$AAPL.Close
-#  Y <- stock$MSFT.Close
+#  X <- DJS$Apple
+#  Y <- DJS$Microsoft
 #  detail <- pcFullDetails(X, Y, E = 3, tau = 2, metric = "euclidean", h = 1, weighted = TRUE)
 #  predict_status <- detail$spectrumOfCausalityPredicted
 #  real_status <- detail$spectrumOfCausalityReal
