@@ -2,40 +2,123 @@
 % Please edit documentation in R/pcCV.R
 \name{pcCrossValidation}
 \alias{pcCrossValidation}
-\title{Pattern Causality Cross-Validation}
+\title{Pattern Causality Cross-Validation Analysis}
 \usage{
-pcCrossValidation(X, Y, E, tau, metric, h, weighted, numberset)
+pcCrossValidation(
+  X,
+  Y,
+  E,
+  tau,
+  metric = "euclidean",
+  h,
+  weighted,
+  distance_fn = NULL,
+  state_space_fn = NULL,
+  numberset,
+  random = TRUE,
+  bootstrap = 1,
+  verbose = FALSE,
+  n_cores = 1
+)
 }
 \arguments{
-\item{X}{A numeric vector representing the first time series.}
+\item{X}{Numeric vector representing the first time series.}
 
-\item{Y}{A numeric vector representing the second time series.}
+\item{Y}{Numeric vector representing the second time series.}
 
-\item{E}{An integer specifying the embedding dimension for the state space reconstruction.}
+\item{E}{Integer specifying the embedding dimension.}
 
-\item{tau}{An integer specifying the time delay for the state space reconstruction.}
+\item{tau}{Integer specifying the time delay.}
 
-\item{metric}{A character string specifying the distance metric used in the causality computation (e.g., "euclidean").}
+\item{metric}{Character string specifying the distance metric to use.}
 
-\item{h}{An integer specifying the prediction horizon.}
+\item{h}{Integer specifying the prediction horizon.}
 
-\item{weighted}{A logical value indicating whether to apply weighted causality measures.}
+\item{weighted}{Logical indicating whether to use weighted calculations.}
 
-\item{numberset}{A numeric vector specifying the sample sizes for the cross-validation procedure.}
+\item{distance_fn}{Optional custom distance function.}
+
+\item{state_space_fn}{Optional custom state space function.}
+
+\item{numberset}{Numeric vector of sample sizes to analyze.}
+
+\item{random}{Logical indicating whether to use random sampling (default: TRUE).}
+
+\item{bootstrap}{Integer specifying the number of bootstrap iterations (default: 1).}
+
+\item{verbose}{Logical indicating whether to display progress messages.}
+
+\item{n_cores}{Integer specifying the number of cores to use for parallel computation (default: 1).}
 }
 \value{
-A data frame containing the aggregated causality metrics across different sample sizes. The data frame includes the positive, negative, and dark causality percentages.
+A pc_cv object containing:
+\itemize{
+\item samples: Vector of sample sizes used
+\item results: Array of causality results
+\item parameters: List of analysis parameters
+}
+
+The results array structure depends on the bootstrap parameter:
+\itemize{
+\item If bootstrap>1: A three-dimensional array where first dimension represents
+sample sizes, second dimension contains statistics (mean, quantiles, median),
+and third dimension represents causality types (positive, negative, dark)
+\item If bootstrap=1: A three-dimensional array where first dimension represents
+sample sizes, second dimension contains single values, and third dimension
+represents causality types (positive, negative, dark)
+}
 }
 \description{
-The \code{pcCrossValidation} function performs cross-validation on time series data to evaluate the robustness of pattern causality measures. It repeatedly samples subsets of the data, applies the pattern causality algorithm, and aggregates the results to provide a comprehensive assessment of the causality metrics.
+Evaluates the robustness of pattern causality measures through
+repeated sampling analysis. This function performs cross-validation by analyzing
+multiple subsets of the data to assess the stability of causality relationships.
+}
+\details{
+Perform Pattern Causality Cross-Validation Analysis
+
+The function implements these key steps:
+\itemize{
+\item Validates input parameters and data
+\item Performs stratified sampling of time series data
+\item When random=TRUE and bootstrap>1, performs bootstrap sampling
+\item Computes pattern causality measures for each sample
+\item Aggregates results across all samples
+}
+
+When bootstrap sampling is enabled (random=TRUE and bootstrap>1), the function returns
+statistics including mean, 5\% quantile, 95\% quantile, and median for each sample size.
 }
 \examples{
 \donttest{
-data(DJS)
-X <- DJS$X3M
-Y <- DJS$American.Express
-numberset <- c(1000,2000,3000,4000)
-result <- pcCrossValidation(X,Y,3,2,"euclidean",1,FALSE,numberset)
-print(result)
+data(climate_indices)
+X <- climate_indices$AO
+Y <- climate_indices$AAO
+
+# Basic cross-validation
+cv_result <- pcCrossValidation(
+  X, Y, 
+  E = 3, tau = 1,
+  metric = "euclidean",
+  h = 1,
+  weighted = FALSE,
+  numberset = c(100, 200, 300)
+)
+
+# Cross-validation with bootstrap
+cv_result_boot <- pcCrossValidation(
+  X, Y,
+  E = 3, tau = 1,
+  metric = "euclidean",
+  h = 1,
+  weighted = FALSE,
+  numberset = c(100, 200, 300),
+  random = TRUE,
+  bootstrap = 100
+)
 }
+}
+\seealso{
+\code{\link{plot.pc_cv}} for visualizing cross-validation results
+\code{\link{print.pc_cv}} for printing cross-validation results
+\code{\link{summary.pc_cv}} for summarizing cross-validation results
 }

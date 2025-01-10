@@ -8,15 +8,36 @@
 [![CRAN
 status](https://www.r-pkg.org/badges/version/patterncausality)](https://cran.r-project.org/package=patterncausality)
 [![R-CMD-check](https://github.com/skstavroglou/pattern_causality/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/skstavroglou/pattern_causality/actions/workflows/R-CMD-check.yaml)
+[![Downloads](https://cranlogs.r-pkg.org/badges/grand-total/patterncausality)](https://cran.r-project.org/package=patterncausality)
+
 <!-- badges: end -->
 
 ## Overview
 
-The goal of patterncausality is to measure the causality in the complex
-system. The core of this algorithm is measure the strength of each
-causality status like positive, negative, and dark in the view of
-complex system, this method could be used for many different fields like
-financial market, ecosystem, medical diagnosis and so on.
+The patterncausality package implements a novel approach for detecting
+and analyzing causal relationships in complex systems. Key features
+include:
+
+### Core Capabilities
+
+- Pattern-based causality detection
+- State space reconstruction
+- Multi-dimensional causality analysis
+- Robust cross-validation methods
+
+### Applications
+
+- Financial market analysis
+- Climate system interactions
+- Medical diagnosis
+- Ecological system dynamics
+
+### Key Advantages
+
+- Detects nonlinear causal relationships
+- Quantifies causality strength
+- Identifies hidden patterns
+- Handles noisy data effectively
 
 This algorithm has a lot of advantages.
 
@@ -60,28 +81,39 @@ head(climate_indices)
 #> 6 1979-06-01  0.9332 1.7000  1.60 -1.64
 ```
 
-This dataset contains 4 time series of climate index, we could use the
-patterncausality in this dataset.
+This dataset contains 4 famous time series of climate index, we can find
+the introduction of this dataset in the CRAN and R documment, we could
+use the `patterncausality` in this dataset to detect the hidden
+causality in this climate system.
 
-Then we need to determine the `E` and `tao`.
+The climate system is a typical complex system like lorenz system, which
+are both originating from the climate system, it’s a good example to
+show how to find the hidden causality in the complex system.
+
+First of all, we need to determine the `E` and `tao`, it could be easy
+to complete by `optimalParametersSearch` function like this:
 
 ``` r
 dataset <- climate_indices[, -1] # remove the date column
 parameter <- optimalParametersSearch(Emax = 5, tauMax = 5, metric = "euclidean", dataset = dataset)
 ```
 
-|     |       | Total     | of which Positive | of which Negative | of which Dark |
-|-----|-------|-----------|-------------------|-------------------|---------------|
-| E=2 | tau=1 | 0.5543614 | 0.5519477         | 0.4474361         | 0.0006162144  |
-| E=2 | tau=2 | 0.5727414 | 0.5736100         | 0.4232828         | 0.0031071596  |
-| E=2 | tau=3 | 0.5711838 | 0.5469069         | 0.4513270         | 0.0017660870  |
-| E=3 | tau=1 | 0.3305296 | 0.3457169         | 0.2470929         | 0.4071902523  |
-| E=3 | tau=2 | 0.3500000 | 0.4037138         | 0.2547524         | 0.3415338782  |
-| E=3 | tau=3 | 0.3570093 | 0.3657638         | 0.2690536         | 0.3651826225  |
+| E   | tau | Total     | Positive  | Negative   | Dark         |
+|-----|-----|-----------|-----------|------------|--------------|
+| 2   | 1   | 0.5503802 | 0.5529091 | 0.44647239 | 0.0006185057 |
+| 2   | 2   | 0.5672403 | 0.5722529 | 0.42461112 | 0.0031359329 |
+| 2   | 3   | 0.5647436 | 0.5471488 | 0.45106762 | 0.0017836150 |
+| 2   | 4   | 0.5538362 | 0.5485637 | 0.44961187 | 0.0018243903 |
+| 2   | 5   | 0.5616083 | 0.5433907 | 0.45513014 | 0.0014791531 |
+| 3   | 1   | 0.3203775 | 0.3460809 | 0.24690959 | 0.4070094904 |
+| 3   | 2   | 0.3362460 | 0.4010403 | 0.25410446 | 0.3448552507 |
+| 3   | 3   | 0.3388998 | 0.3657369 | 0.26857083 | 0.3656922393 |
 
 Of course, we can also change the distance style to calculate the
-distance matrix. Then according the combo that produces the highest
-percentages collectively, we can choose the best parameters here.
+distance matrix or even custom distance function, we can find more
+inforation on our website. Then according the combo that produces the
+highest percentages collectively, we can choose the best parameters
+here.
 
 After the parameters are confirmed, we could calculate the pattern
 causality.
@@ -89,26 +121,38 @@ causality.
 ``` r
 X <- climate_indices$AO
 Y <- climate_indices$AAO
-pc <- pcLightweight(X, Y, E = 3, tau = 2, metric = "euclidean", h = 1, weighted = TRUE, tpb=FALSE)
+pc <- pcLightweight(X, Y, E = 3, tau = 1, metric = "euclidean", h = 1, weighted = TRUE, verbose = FALSE)
 print(pc)
-#>       total positive  negative     dark
-#> 1 0.2841121 0.326087 0.2318841 0.442029
+#> Pattern Causality Analysis Results:
+#> Total: 0.2336
+#> Positive: 0.4471
+#> Negative: 0.1380
+#> Dark: 0.4150
 ```
 
-Then the percentage of each status will be showed below.
+The percentages of each causality status will be displayed below.
 
-If we wonder the status in each time point, we can run the code.
+To examine the causality status at each time point, we can run the
+following code and find the causality strength at each time point by
+function `pcFullDetails`, the `causality_predict` is the predicted
+causality status at each point, the parameter `weighted = TRUE` is used
+to for erf function and if it’s FALSE, then it will just use the 1 or 0
+to present the causality strength, however, whatever which one is used,
+the total causality points will be the same.
 
 ``` r
 X <- climate_indices$AO
 Y <- climate_indices$AAO
-detail <- pcFullDetails(X, Y, E = 2, tau = 1, metric = "euclidean", h = 3, weighted = TRUE)
-predict_status <- detail$spectrumOfCausalityPredicted
-real_status <- detail$spectrumOfCausalityReal
+detail <- pcFullDetails(X, Y, E = 3, tau = 1, metric = "euclidean", h = 1, weighted = TRUE, verbose = FALSE)
+predict_status <- detail$causality_predict
+real_status <- detail$causality_real
 ```
 
-Then the status series will be saved in `predict_status` and
-`real_status`.
+Then the causality strength series will be saved in `predict_status` and
+`real_status`, if we want to plot the causality strength series, we can
+use the `plot_causality` function for the `pc_full_details` class, and
+it will show the continuous causality strength series in the whole time
+period, we can find the dynamic pattern causality strength by this way.
 
 ### Conclusion
 
@@ -188,3 +232,17 @@ Monash Business School and is the author and maintainer of the
 - Stavroglou, S. K., Ayyub, B. M., Kallinterakis, V., Pantelous, A. A.,
   & Stanley, H. E. (2021). A novel causal risk‐based decision‐making
   methodology: The case of coronavirus. *Risk Analysis, 41(5)*, 814-830.
+
+## Test environments
+
+- local R installation, R 4.1.0
+- ubuntu 20.04 (on GitHub Actions), R 4.1.0
+- win-builder (devel and release)
+
+## R CMD check results
+
+0 errors \| 0 warnings \| 0 notes
+
+## Downstream dependencies
+
+There are currently no downstream dependencies for this package

@@ -1,94 +1,256 @@
-#' @title Pattern Causality Cross-Validation
+#' Perform Pattern Causality Cross-Validation Analysis
 #' 
-#' @description
-#' The `pcCrossValidation` function performs cross-validation on time series data to evaluate the robustness of pattern causality measures. It repeatedly samples subsets of the data, applies the pattern causality algorithm, and aggregates the results to provide a comprehensive assessment of the causality metrics.
-#' 
-#' @param X A numeric vector representing the first time series.
-#' @param Y A numeric vector representing the second time series.
-#' @param E An integer specifying the embedding dimension for the state space reconstruction.
-#' @param tau An integer specifying the time delay for the state space reconstruction.
-#' @param metric A character string specifying the distance metric used in the causality computation (e.g., "euclidean").
-#' @param h An integer specifying the prediction horizon.
-#' @param weighted A logical value indicating whether to apply weighted causality measures.
-#' @param numberset A numeric vector specifying the sample sizes for the cross-validation procedure.
-#' 
-#' @return
-#' A data frame containing the aggregated causality metrics across different sample sizes. The data frame includes the positive, negative, and dark causality percentages.
-#' 
-#' @export
+#' @title Pattern Causality Cross-Validation Analysis
+#' @description Evaluates the robustness of pattern causality measures through 
+#' repeated sampling analysis. This function performs cross-validation by analyzing 
+#' multiple subsets of the data to assess the stability of causality relationships.
+#'
+#' @param X Numeric vector representing the first time series.
+#' @param Y Numeric vector representing the second time series.
+#' @param E Integer specifying the embedding dimension.
+#' @param tau Integer specifying the time delay.
+#' @param metric Character string specifying the distance metric to use.
+#' @param h Integer specifying the prediction horizon.
+#' @param weighted Logical indicating whether to use weighted calculations.
+#' @param distance_fn Optional custom distance function.
+#' @param state_space_fn Optional custom state space function.
+#' @param numberset Numeric vector of sample sizes to analyze.
+#' @param random Logical indicating whether to use random sampling (default: TRUE).
+#' @param bootstrap Integer specifying the number of bootstrap iterations (default: 1).
+#' @param verbose Logical indicating whether to display progress messages.
+#' @param n_cores Integer specifying the number of cores to use for parallel computation (default: 1).
+#'
+#' @details
+#' The function implements these key steps:
+#' \itemize{
+#'   \item Validates input parameters and data
+#'   \item Performs stratified sampling of time series data
+#'   \item When random=TRUE and bootstrap>1, performs bootstrap sampling
+#'   \item Computes pattern causality measures for each sample
+#'   \item Aggregates results across all samples
+#' }
+#'
+#' When bootstrap sampling is enabled (random=TRUE and bootstrap>1), the function returns
+#' statistics including mean, 5% quantile, 95% quantile, and median for each sample size.
+#'
+#' @return A pc_cv object containing:
+#' \itemize{
+#'   \item samples: Vector of sample sizes used
+#'   \item results: Array of causality results
+#'   \item parameters: List of analysis parameters
+#' }
+#'
+#' The results array structure depends on the bootstrap parameter:
+#' \itemize{
+#'   \item If bootstrap>1: A three-dimensional array where first dimension represents
+#'         sample sizes, second dimension contains statistics (mean, quantiles, median),
+#'         and third dimension represents causality types (positive, negative, dark)
+#'   \item If bootstrap=1: A three-dimensional array where first dimension represents
+#'         sample sizes, second dimension contains single values, and third dimension
+#'         represents causality types (positive, negative, dark)
+#' }
+#'
 #' @examples
 #' \donttest{
-#' data(DJS)
-#' X <- DJS$X3M
-#' Y <- DJS$American.Express
-#' numberset <- c(1000,2000,3000,4000)
-#' result <- pcCrossValidation(X,Y,3,2,"euclidean",1,FALSE,numberset)
-#' print(result)
+#' data(climate_indices)
+#' X <- climate_indices$AO
+#' Y <- climate_indices$AAO
+#' 
+#' # Basic cross-validation
+#' cv_result <- pcCrossValidation(
+#'   X, Y, 
+#'   E = 3, tau = 1,
+#'   metric = "euclidean",
+#'   h = 1,
+#'   weighted = FALSE,
+#'   numberset = c(100, 200, 300)
+#' )
+#' 
+#' # Cross-validation with bootstrap
+#' cv_result_boot <- pcCrossValidation(
+#'   X, Y,
+#'   E = 3, tau = 1,
+#'   metric = "euclidean",
+#'   h = 1,
+#'   weighted = FALSE,
+#'   numberset = c(100, 200, 300),
+#'   random = TRUE,
+#'   bootstrap = 100
+#' )
 #' }
-
-pcCrossValidation <- function(X, Y, E, tau, metric, h, weighted, numberset){
-  if(!is.atomic(numberset)){
-    stop("Please enter the vector of the sample number.")
+#' @seealso 
+#' \code{\link{plot.pc_cv}} for visualizing cross-validation results
+#' \code{\link{print.pc_cv}} for printing cross-validation results
+#' \code{\link{summary.pc_cv}} for summarizing cross-validation results
+#'
+#' @export
+pcCrossValidation <- function(X, Y, E, tau, metric = "euclidean", h, weighted,  
+                             distance_fn = NULL,
+                             state_space_fn = NULL,
+                             numberset, random = TRUE, bootstrap = 1, 
+                             verbose = FALSE,
+                             n_cores = 1) {
+  
+  # Input validation
+  if(!is.logical(random)) {
+    stop("random must be logical", call. = FALSE)
   }
-  if(max(numberset) <= length(X)){
-    numbers <- sort(numberset)
-    positive <- dataBank("vector",length(numberset))
-    negative <- dataBank("vector",length(numberset))
-    dark <- dataBank("vector",length(numberset))
-    pb <- utils::txtProgressBar(min = 1, max = length(numbers), style = 3, char="#")
-    for(i in 1:length(numbers)){
-      samplex <- sample(X, numbers[i])
-      sampley <- sample(Y,numbers[i])
-      positive[i] <- pcLightweight(samplex, sampley, E, tau, metric, h, weighted,tpb=FALSE)$positive
-      negative[i] <- pcLightweight(samplex, sampley, E, tau, metric, h, weighted,tpb=FALSE)$negative
-      dark[i] <- pcLightweight(samplex, sampley, E, tau, metric, h, weighted,tpb=FALSE)$dark
-      together <- data.frame(positive, negative, dark)
-      rownames(together) <- numbers
-      utils::setTxtProgressBar(pb, i)
+  if(!is.numeric(numberset) || any(numberset <= 0)) {
+    stop("numberset must contain positive numeric values", call. = FALSE)
+  }
+  if(max(numberset) > length(X)) {
+    stop("Sample sizes cannot exceed time series length", call. = FALSE)
+  }
+  if(!is.numeric(bootstrap) || bootstrap < 1) {
+    stop("bootstrap must be a positive integer", call. = FALSE)
+  }
+  if(!random && bootstrap > 1) {
+    warning("bootstrap is ignored when random = FALSE", call. = FALSE)
+    bootstrap <- 1
+  }
+  if(!is.numeric(n_cores) || n_cores < 1) {
+    stop("n_cores must be a positive integer", call. = FALSE)
+  }
+  
+  # Validate core inputs
+  validate_inputs(X, Y, E, tau, metric, h, weighted, distance_fn)
+  
+  # Initialize results array
+  numbers <- sort(numberset)
+  if(random && bootstrap > 1) {
+    results <- array(NA_real_, 
+                    dim = c(length(numbers), 4, 3),
+                    dimnames = list(
+                      as.character(numbers),
+                      c("mean", "5%", "95%", "median"),
+                      c("positive", "negative", "dark")
+                    ))
+  } else {
+    results <- array(NA_real_,
+                    dim = c(length(numbers), 1, 3),
+                    dimnames = list(
+                      as.character(numbers),
+                      "value",
+                      c("positive", "negative", "dark")
+                    ))
+  }
+  
+  if(verbose) {
+    cat("Performing cross-validation analysis...\n")
+  }
+  
+  # Setup parallel computation if needed
+  if(n_cores > 1 && random && bootstrap > 1) {
+    if(verbose) cat("Setting up parallel computation with", n_cores, "cores...\n")
+    cl <- parallel::makeCluster(n_cores)
+    on.exit(parallel::stopCluster(cl))
+    
+    # Export required objects to worker nodes
+    parallel::clusterExport(cl, c("X", "Y", "E", "tau", "h", "weighted", 
+                                 "metric", "distance_fn", "state_space_fn",
+                                 "pcLightweight"), 
+                           envir = environment())
+  }
+  
+  # Main analysis loop
+  for(i in seq_along(numbers)) {
+    if(random) {
+      if(bootstrap > 1) {
+        # Parallel bootstrap analysis
+        if(n_cores > 1) {
+          # Parallel computation of bootstrap samples
+          bootstrap_results <- do.call(rbind, parallel::parLapply(cl, 1:bootstrap, function(b) {
+            idx <- sample(1:length(X), numbers[i], replace = TRUE)
+            samplex <- X[idx]
+            sampley <- Y[idx]
+            
+            pc_result <- pcLightweight(samplex, sampley, E, tau, h, weighted,
+                                     metric = metric,
+                                     distance_fn = distance_fn,
+                                     state_space_fn = state_space_fn,
+                                     verbose = FALSE)
+            
+            c(pc_result$positive, pc_result$negative, pc_result$dark)
+          }))
+        } else {
+          # Sequential bootstrap computation
+          bootstrap_results <- matrix(NA_real_, nrow = bootstrap, ncol = 3)
+          for(b in 1:bootstrap) {
+            idx <- sample(1:length(X), numbers[i], replace = TRUE)
+            samplex <- X[idx]
+            sampley <- Y[idx]
+            
+            pc_result <- pcLightweight(samplex, sampley, E, tau, h, weighted,
+                                     metric = metric,
+                                     distance_fn = distance_fn,
+                                     state_space_fn = state_space_fn,
+                                     verbose = FALSE)
+            
+            bootstrap_results[b, ] <- c(pc_result$positive,
+                                      pc_result$negative,
+                                      pc_result$dark)
+          }
+        }
+        
+        # Calculate statistics
+        results[i, , ] <- rbind(
+          colMeans(bootstrap_results),
+          apply(bootstrap_results, 2, function(x) stats::quantile(x, 0.05)),
+          apply(bootstrap_results, 2, function(x) stats::quantile(x, 0.95)),
+          apply(bootstrap_results, 2, stats::median)
+        )
+      } else {
+        # Single random sample
+        idx <- sample(1:(length(X) - numbers[i] + 1), 1)
+        samplex <- X[idx:(idx + numbers[i] - 1)]
+        sampley <- Y[idx:(idx + numbers[i] - 1)]
+        
+        pc_result <- pcLightweight(samplex, sampley, E, tau, h, weighted,
+                                 metric = metric,
+                                 distance_fn = distance_fn,
+                                 state_space_fn = state_space_fn,
+                                 verbose = FALSE)
+        
+        results[i, 1, ] <- c(pc_result$positive,
+                            pc_result$negative,
+                            pc_result$dark)
+      }
+    } else {
+      # Sequential sampling
+      samplex <- X[1:numbers[i]]
+      sampley <- Y[1:numbers[i]]
+      
+      pc_result <- pcLightweight(samplex, sampley, E, tau, h, weighted,
+                               metric = metric,
+                               distance_fn = distance_fn,
+                               state_space_fn = state_space_fn,
+                               verbose = FALSE)
+      
+      results[i, 1, ] <- c(pc_result$positive,
+                          pc_result$negative,
+                          pc_result$dark)
+    }
+    
+    if(verbose) {
+      report_progress(i, length(numbers), "Cross-validation analysis", verbose)
     }
   }
-  else{
-    stop("The sample number is larger than the dataset.")
-  }
-  return(together)
+  
+  # Return pc_cv object with modified structure
+  result <- pc_cv(
+    samples = numbers,
+    results = results,
+    parameters = list(
+      E = E,
+      tau = tau,
+      metric = metric,
+      h = h,
+      weighted = weighted,
+      random = random,
+      bootstrap = bootstrap,
+      n_cores = n_cores
+    )
+  )
+  
+  return(result)
 }
-
-
-#' @title Plot Cross-Validation Results for Pattern Causality
-#' 
-#' @description
-#' The `plotCV` function generates a plot to visualize the results of cross-validation for pattern causality. It displays the positive, negative, and dark causality strengths across different sample sizes, providing a clear graphical representation of the cross-validation outcomes.
-#' 
-#' @param pcCV A data frame containing the cross-validation results from the `pcCrossValidation` function. The data frame should include columns for positive, negative, and dark causality strengths, along with the corresponding sample sizes.
-#' @param fr A bool value for the plot frame
-#' 
-#' @return
-#' A plot visualizing the positive, negative, and dark causality strengths across different sample sizes. The plot includes points and lines for each causality type, along with a legend for easy interpretation.
-#' 
-#' @importFrom graphics points lines legend
-#' @export
-#' @examples
-#' \donttest{
-#' data(DJS)
-#' X <- DJS$X3M
-#' Y <- DJS$American.Express
-#' numberset <- c(1000,2000,3000,4000)
-#' result <- pcCrossValidation(X,Y,3,2,"euclidean",1,FALSE,numberset)
-#' plotCV(result,FALSE)
-#' }
-plotCV <- function(pcCV,fr=FALSE){
-  pcCV$number <- rownames(pcCV)
-  plot(pcCV$number, pcCV$positive, type = "b", pch = 19,xlab="L",ylab="Causality Strength", 
-       col = "#5BA3CF", frame = fr, ylim=c(0,1))
-  lines(pcCV$number, pcCV$negative, pch = 19, col = "#F6583E", type = "b")
-  lines(pcCV$number, pcCV$dark, pch = 19, col = "#6A51A3", type = "b")
-  legend("topright",0.98,c("positive", "negative","dark"),col=c("#5BA3CF","#F6583E","#6A51A3"),pch=19,lty=1, bty = "n")
-  # plot(pcCV$number, pcCV$positive,pch=15,col="DarkTurquoise",ylim=c(0,1),xlab="L",ylab="Causality Strength")
-  # points(pcCV$number, pcCV$negative,pch=16,col="DeepPink",cex=1)
-  # points(pcCV$number, pcCV$dark,pch=17,col="RosyBrown",cex=1)
-  # lines(pcCV$number, pcCV$positive,col="DarkTurquoise",lty=1)
-  # lines(pcCV$number, pcCV$negative,col="DeepPink",lty=2)
-  # lines(pcCV$number, pcCV$dark,col="RosyBrown",lty=3)
-  # legend("topright",0.98,c("positive", "negative","dark"),col=c("DarkTurquoise","DeepPink","RosyBrown"),text.col=c("DarkTurquoise","DeepPink","RosyBrown"),pch=c(15,16,17),lty=c(1,2,3))
-}
-
