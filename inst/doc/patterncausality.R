@@ -59,3 +59,9 @@ plot_components(pc)
 # causality_pred <- detail$causality_pred
 # print(causality_pred)
 
+## -----------------------------------------------------------------------------
+# Example with both weighted and relative TRUE
+pc_rel_weighted <- pcLightweight(X, Y, E = 3, tau = 2, metric = "euclidean", 
+                               h = 1, weighted = TRUE, relative = TRUE)
+print(pc_rel_weighted)
+

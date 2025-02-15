@@ -453,10 +453,10 @@ remaining NA values by replacing them with the mean.</p>
 <span id="cb3-16"><a href="#cb3-16" tabindex="-1"></a><span class="co">#&gt; [1] &quot;Result with adaptive distance:&quot;</span></span>
 <span id="cb3-17"><a href="#cb3-17" tabindex="-1"></a><span class="fu">print</span>(result1)</span>
 <span id="cb3-18"><a href="#cb3-18" tabindex="-1"></a><span class="co">#&gt; Pattern Causality Analysis Results:</span></span>
-<span id="cb3-19"><a href="#cb3-19" tabindex="-1"></a><span class="co">#&gt; Total: 0.3051</span></span>
-<span id="cb3-20"><a href="#cb3-20" tabindex="-1"></a><span class="co">#&gt; Positive: 0.3719</span></span>
-<span id="cb3-21"><a href="#cb3-21" tabindex="-1"></a><span class="co">#&gt; Negative: 0.2036</span></span>
-<span id="cb3-22"><a href="#cb3-22" tabindex="-1"></a><span class="co">#&gt; Dark: 0.4245</span></span>
+<span id="cb3-19"><a href="#cb3-19" tabindex="-1"></a><span class="co">#&gt; Total: 0.3925</span></span>
+<span id="cb3-20"><a href="#cb3-20" tabindex="-1"></a><span class="co">#&gt; Positive: 0.4661</span></span>
+<span id="cb3-21"><a href="#cb3-21" tabindex="-1"></a><span class="co">#&gt; Negative: 0.0593</span></span>
+<span id="cb3-22"><a href="#cb3-22" tabindex="-1"></a><span class="co">#&gt; Dark: 0.4746</span></span>
 <span id="cb3-23"><a href="#cb3-23" tabindex="-1"></a></span>
 <span id="cb3-24"><a href="#cb3-24" tabindex="-1"></a><span class="co"># Example 2: Using only improved state space</span></span>
 <span id="cb3-25"><a href="#cb3-25" tabindex="-1"></a>result2 <span class="ot">&lt;-</span> <span class="fu">pcLightweight</span>(</span>
@@ -473,10 +473,10 @@ remaining NA values by replacing them with the mean.</p>
 <span id="cb3-36"><a href="#cb3-36" tabindex="-1"></a><span class="co">#&gt; [1] &quot;\nResult with denoised state space:&quot;</span></span>
 <span id="cb3-37"><a href="#cb3-37" tabindex="-1"></a><span class="fu">print</span>(result2)</span>
 <span id="cb3-38"><a href="#cb3-38" tabindex="-1"></a><span class="co">#&gt; Pattern Causality Analysis Results:</span></span>
-<span id="cb3-39"><a href="#cb3-39" tabindex="-1"></a><span class="co">#&gt; Total: 0.1808</span></span>
-<span id="cb3-40"><a href="#cb3-40" tabindex="-1"></a><span class="co">#&gt; Positive: 0.2867</span></span>
-<span id="cb3-41"><a href="#cb3-41" tabindex="-1"></a><span class="co">#&gt; Negative: 0.0516</span></span>
-<span id="cb3-42"><a href="#cb3-42" tabindex="-1"></a><span class="co">#&gt; Dark: 0.6617</span></span></code></pre></div>
+<span id="cb3-39"><a href="#cb3-39" tabindex="-1"></a><span class="co">#&gt; Total: 0.1183</span></span>
+<span id="cb3-40"><a href="#cb3-40" tabindex="-1"></a><span class="co">#&gt; Positive: 0.2178</span></span>
+<span id="cb3-41"><a href="#cb3-41" tabindex="-1"></a><span class="co">#&gt; Negative: 0.0927</span></span>
+<span id="cb3-42"><a href="#cb3-42" tabindex="-1"></a><span class="co">#&gt; Dark: 0.6896</span></span></code></pre></div>
 <p>In the first example, we use the <code>adaptive_distance</code>
 function as the <code>distance_fn</code> argument. In the second
 example, we use the <code>denoised_state_space</code> function as the
@@ -498,8 +498,8 @@ functions.</p>
 <span id="cb4-10"><a href="#cb4-10" tabindex="-1"></a><span class="co">#&gt; [1] &quot;\nComparison of different approaches:&quot;</span></span>
 <span id="cb4-11"><a href="#cb4-11" tabindex="-1"></a><span class="fu">print</span>(compare_results)</span>
 <span id="cb4-12"><a href="#cb4-12" tabindex="-1"></a><span class="co">#&gt;              Method     Total  Positive   Negative      Dark</span></span>
-<span id="cb4-13"><a href="#cb4-13" tabindex="-1"></a><span class="co">#&gt; 1 Adaptive Distance 0.3050847 0.3718733 0.20362022 0.4245065</span></span>
-<span id="cb4-14"><a href="#cb4-14" tabindex="-1"></a><span class="co">#&gt; 2    Denoised Space 0.1807910 0.2867278 0.05159743 0.6616748</span></span></code></pre></div>
+<span id="cb4-13"><a href="#cb4-13" tabindex="-1"></a><span class="co">#&gt; 1 Adaptive Distance 0.3924731 0.4660910 0.05931635 0.4745926</span></span>
+<span id="cb4-14"><a href="#cb4-14" tabindex="-1"></a><span class="co">#&gt; 2    Denoised Space 0.1182796 0.2177571 0.09265175 0.6895911</span></span></code></pre></div>
 <p>This table shows the total, positive, negative, and dark causality
 values for each method, allowing you to compare the impact of using
 custom functions.</p>
