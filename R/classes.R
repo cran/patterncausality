@@ -97,10 +97,10 @@ plot_total.pc_fit <- function(x, ...) {
     value = c(x$total, 1 - x$total),
     stringsAsFactors = FALSE
   )
-  
+
   # Set colors
   colors <- c("#DCDCDC", "#696969")  # Light gray, Dark gray
-  
+
   # Create plot
   p <- ggplot2::ggplot(data, ggplot2::aes(x = type, y = value, fill = type)) +
     ggplot2::geom_col() +
@@ -120,7 +120,7 @@ plot_total.pc_fit <- function(x, ...) {
       legend.position = "none",
       axis.title.x = ggplot2::element_blank()
     )
-  
+
   print(p)
   invisible(p)
 }
@@ -142,14 +142,14 @@ plot_components.pc_fit <- function(x, ...) {
     value = c(x$positive, x$negative, x$dark),
     stringsAsFactors = FALSE
   )
-  
+
   # Set colors - corrected order
   colors <- c(
     "Positive" = "#5BA3CF",  # Blue
     "Negative" = "#F6583E",  # Red
     "Dark" = "#6A51A3"      # Purple
   )
-  
+
   # Create plot
   p <- ggplot2::ggplot(data, ggplot2::aes(x = type, y = value, fill = type)) +
     ggplot2::geom_col() +
@@ -169,7 +169,7 @@ plot_components.pc_fit <- function(x, ...) {
       legend.position = "none",
       axis.title.x = ggplot2::element_blank()
     )
-  
+
   print(p)
   invisible(p)
 }
@@ -192,13 +192,13 @@ plot.pc_fit <- function(x, ...) {
     value = c(x$total, 1 - x$total),
     stringsAsFactors = FALSE
   )
-  
+
   data2 <- data.frame(
     type = c('Positive', 'Negative', 'Dark'),
     value = c(x$positive, x$negative, x$dark),
     stringsAsFactors = FALSE
   )
-  
+
   # Set up colors - corrected order
   colors1 <- c("#DCDCDC", "#696969")  # Light gray, Dark gray
   colors2 <- c(
@@ -206,7 +206,7 @@ plot.pc_fit <- function(x, ...) {
     "Negative" = "#F6583E",  # Red
     "Dark" = "#6A51A3"      # Purple
   )
-  
+
   # Create first plot (Total Causality)
   p1 <- ggplot2::ggplot(data1, ggplot2::aes(x = type, y = value, fill = type)) +
     ggplot2::geom_col() +
@@ -226,7 +226,7 @@ plot.pc_fit <- function(x, ...) {
       legend.position = "none",
       axis.title.x = ggplot2::element_blank()
     )
-  
+
   # Create second plot (Components)
   p2 <- ggplot2::ggplot(data2, ggplot2::aes(x = type, y = value, fill = type)) +
     ggplot2::geom_col() +
@@ -246,10 +246,10 @@ plot.pc_fit <- function(x, ...) {
       legend.position = "none",
       axis.title.x = ggplot2::element_blank()
     )
-  
+
   # Arrange plots side by side
   gridExtra::grid.arrange(p1, p2, ncol = 2)
-  
+
   invisible(NULL)
 }
 
@@ -268,8 +268,8 @@ plot.pc_fit <- function(x, ...) {
 #' @examples
 #' data(climate_indices)
 #' dataset <- climate_indices[, -1]
-#' pc_matrix_obj <- pcMatrix(dataset, E = 3, tau = 1, 
-#'   metric = "euclidean", h = 1, weighted = TRUE, 
+#' pc_matrix_obj <- pcMatrix(dataset, E = 3, tau = 1,
+#'   metric = "euclidean", h = 1, weighted = TRUE,
 #'   verbose = FALSE)
 #' print(pc_matrix_obj)
 #' @export
@@ -277,14 +277,14 @@ pc_matrix <- function(positive = NULL, negative = NULL, dark = NULL, items = NUL
   if(verbose) {
     cat("Creating Pattern Causality Matrix object...\n")
   }
-  
+
   # Validate input matrices dimensions
   matrices <- list(positive = positive, negative = negative, dark = dark)
   dims <- lapply(matrices[!sapply(matrices, is.null)], dim)
   if(length(unique(dims)) > 1) {
     stop("All provided matrices must have the same dimensions")
   }
-  
+
   # Get or validate items
   if(is.null(items)) {
     items <- colnames(positive)
@@ -302,11 +302,11 @@ pc_matrix <- function(positive = NULL, negative = NULL, dark = NULL, items = NUL
       if (length(items_X) != nrow(positive) || length(items_Y) != ncol(positive)) {
           stop("Length of items in list must match matrix dimensions")
       }
-      
+
   } else if(length(items) != nrow(positive)) {
     stop("Length of items must match matrix dimensions")
   }
-  
+
   # Set row and column names for all matrices
   for(type in c("positive", "negative", "dark")) {
     if(!is.null(matrices[[type]])) {
@@ -319,7 +319,7 @@ pc_matrix <- function(positive = NULL, negative = NULL, dark = NULL, items = NUL
         }
     }
   }
-  
+
   # Create and return pc_matrix object
   structure(
     list(
@@ -345,8 +345,8 @@ pc_matrix <- function(positive = NULL, negative = NULL, dark = NULL, items = NUL
 #' @examples
 #' data(climate_indices)
 #' dataset <- climate_indices[, -1]
-#' pc_matrix_obj <- pcMatrix(dataset, E = 3, tau = 1, 
-#'   metric = "euclidean", h = 1, weighted = TRUE, 
+#' pc_matrix_obj <- pcMatrix(dataset, E = 3, tau = 1,
+#'   metric = "euclidean", h = 1, weighted = TRUE,
 #'   verbose = FALSE)
 #' print(pc_matrix_obj, type = "positive")
 #' @export
@@ -357,19 +357,19 @@ print.pc_matrix <- function(x, type = "all", ...) {
   if(!type %in% valid_types) {
     stop("type must be one of: all, positive, negative, dark")
   }
-  
+
   cat("Pattern Causality Matrix Analysis:\n\n")
   cat("Number of items:", length(x$items), "\n")
-  
+
   if(type == "all") {
     cat("\nPositive causality matrix:\n")
     print(x$positive[1:min(5, nrow(x$positive)), 1:min(5, ncol(x$positive))])
     if(nrow(x$positive) > 5) cat("...\n")
-    
+
     cat("\nNegative causality matrix:\n")
     print(x$negative[1:min(5, nrow(x$negative)), 1:min(5, ncol(x$negative))])
     if(nrow(x$negative) > 5) cat("...\n")
-    
+
     cat("\nDark causality matrix:\n")
     print(x$dark[1:min(5, nrow(x$dark)), 1:min(5, ncol(x$dark))])
     if(nrow(x$dark) > 5) cat("...\n")
@@ -382,7 +382,7 @@ print.pc_matrix <- function(x, type = "all", ...) {
     )
     print(matrix_to_print)
   }
-  
+
   invisible(x)
 }
 
@@ -398,8 +398,8 @@ print.pc_matrix <- function(x, type = "all", ...) {
 #' @examples
 #' data(climate_indices)
 #' dataset <- climate_indices[, -1]
-#' pc_matrix_obj <- pcMatrix(dataset, E = 3, tau = 1, 
-#'   metric = "euclidean", h = 1, weighted = TRUE, 
+#' pc_matrix_obj <- pcMatrix(dataset, E = 3, tau = 1,
+#'   metric = "euclidean", h = 1, weighted = TRUE,
 #'   verbose = FALSE)
 #' summary(pc_matrix_obj)
 #' @export
@@ -408,13 +408,13 @@ summary.pc_matrix <- function(object, ...) {
   cat("Pattern Causality Matrix Summary:\n\n")
   cat("Number of items:", length(object$items), "\n")
   cat("\nMatrix statistics:\n")
-  
+
   stats_list <- list(
     Positive = compute_matrix_stats(object$positive),
     Negative = compute_matrix_stats(object$negative),
     Dark = compute_matrix_stats(object$dark)
   )
-  
+
   stats_df <- data.frame(
     Type = names(stats_list),
     Mean = sapply(stats_list, function(x) round(x$mean, 4)),
@@ -422,7 +422,7 @@ summary.pc_matrix <- function(object, ...) {
     Min = sapply(stats_list, function(x) round(x$min, 4)),
     Max = sapply(stats_list, function(x) round(x$max, 4))
   )
-  
+
   print(stats_df)
   invisible(object)
 }
@@ -448,13 +448,13 @@ summary.pc_matrix <- function(object, ...) {
 #' @examples
 #' data(climate_indices)
 #' dataset <- climate_indices[, -1]
-#' pc_matrix_obj <- pcMatrix(dataset, E = 3, tau = 1, 
-#'   metric = "euclidean", h = 1, weighted = TRUE, 
+#' pc_matrix_obj <- pcMatrix(dataset, E = 3, tau = 1,
+#'   metric = "euclidean", h = 1, weighted = TRUE,
 #'   verbose = FALSE)
 #' plot(pc_matrix_obj, status = "positive")
 #' @export
 #' @method plot pc_matrix
-plot.pc_matrix <- function(x, status, 
+plot.pc_matrix <- function(x, status,
                           width = 0.85,
                           height = 0.75,
                           radius = grid::unit(3, "pt"),
@@ -467,45 +467,45 @@ plot.pc_matrix <- function(x, status,
   if(missing(status)) {
     stop("'status' is a required parameter. Must be one of: positive, negative, dark")
   }
-  
+
   if(!status %in% c("positive", "negative", "dark")) {
     stop("status must be one of: positive, negative, dark")
   }
-  
+
   # Get the appropriate matrix
   matrix_to_plot <- switch(status,
     positive = x$positive,
     negative = x$negative,
     dark = x$dark
   )
-  
+
   # Convert matrix to long format with proper handling of row/column names
   matrix_to_plot <- as.matrix(matrix_to_plot) # Ensure it's a matrix
   matrix_to_plot[is.na(matrix_to_plot)] <- 0  # Replace NA with 0
-  
+
   # Reverse row order to flip matrix
   matrix_to_plot <- matrix_to_plot[nrow(matrix_to_plot):1, ]
-  
+
   row_names <- rownames(matrix_to_plot)
   col_names <- colnames(matrix_to_plot)
-  
+
   # Create data frame
   data_long <- reshape2::melt(matrix_to_plot)
   colnames(data_long) <- c("X", "Y", "Value")
-  
+
   # Set color scheme based on status
   color_high <- switch(status,
     positive = RColorBrewer::brewer.pal(7, "Blues")[-1],
     negative = RColorBrewer::brewer.pal(7, "Reds")[-1],
     dark = RColorBrewer::brewer.pal(7, "Purples")[-1]
   )
-  
+
   # Create plot
   p <- ggplot2::ggplot(data_long, ggplot2::aes(x = Y, y = X, fill = Value)) +
-    geom_rtile(ggplot2::aes(width = width, height = height, fill = Value), 
-               alpha = alpha, 
+    geom_rtile(ggplot2::aes(width = width, height = height, fill = Value),
+               alpha = alpha,
                radius = radius) +
-    ggplot2::scale_fill_gradient(low = "#FFFFFF", 
+    ggplot2::scale_fill_gradient(low = "#FFFFFF",
                                 high = color_high,
                                 limits = c(0, max(matrix_to_plot)),
                                 name = if(show_legend_title) status else "") +
@@ -516,18 +516,18 @@ plot.pc_matrix <- function(x, status,
       axis.text.x = ggplot2::element_text(angle = 90, vjust = 0.5, hjust = 1),
       panel.grid = ggplot2::element_blank(),
       legend.text = ggplot2::element_text(),
-      legend.title = if(show_legend_title) 
-                      ggplot2::element_text() 
-                    else 
+      legend.title = if(show_legend_title)
+                      ggplot2::element_text()
+                    else
                       ggplot2::element_blank()
     ) +
     ggplot2::coord_fixed(ratio = 1.1)
-  
-  # Add text if requested  
+
+  # Add text if requested
   if(show_text) {
     p <- p + ggplot2::geom_text(ggplot2::aes(label = round(Value, 2)))
   }
-  
+
   print(p)
   invisible(p)
 }
@@ -584,9 +584,9 @@ print.pc_cv <- function(x, ...) {
   cat("  Weighted:", x$parameters$weighted, "\n")
   cat("  Random:", x$parameters$random, "\n")
   cat("  Bootstrap:", x$parameters$bootstrap, "\n\n")
-  
+
   cat("Sample sizes:", paste(x$samples, collapse = ", "), "\n\n")
-  
+
   # Print results based on structure
   if(length(dim(x$results)) == 3 && dim(x$results)[2] > 1) {
     # Bootstrap case
@@ -634,6 +634,31 @@ summary.pc_cv <- function(object, ...) {
   )
 }
 
+#' Print Method for pc_cv Summary
+#'
+#' @param x A summary.pc_cv object
+#' @param ... Additional arguments passed to print
+#' @return Invisibly returns the input object
+#' @export
+#' @method print summary.pc_cv
+print.summary.pc_cv <- function(x, ...) {
+  cat("Pattern Causality Cross-Validation Summary\n")
+  cat("----------------------------------------\n")
+
+  if (!is.null(x$parameters)) {
+    cat("Parameters:\n")
+    print(x$parameters, ...)
+    cat("\n")
+  }
+
+  if (!is.null(x$performance_stats)) {
+    cat("Performance Statistics:\n")
+    print(x$performance_stats, ...)
+  }
+
+  invisible(x)
+}
+
 #' Plot Pattern Causality Cross Validation Results
 #'
 #' Visualizes the pattern causality cross-validation results.
@@ -657,29 +682,29 @@ summary.pc_cv <- function(object, ...) {
 plot.pc_cv <- function(x, fr = FALSE, separate = FALSE, ...) {
   # Avoid R CMD check notes about undefined global variables
   Statistic <- Value <- SampleSize <- Dimension <- `5%` <- `95%` <- NULL
-  
+
   # Convert array to data frame
   has_bootstrap <- length(dim(x$results)) == 3 && dim(x$results)[2] > 1
-  
+
   if(has_bootstrap) {
     # For bootstrap case with confidence intervals
     result_df <- as.data.frame(as.table(x$results))
     colnames(result_df) <- c("SampleSize", "Statistic", "Dimension", "Value")
     result_df$SampleSize <- as.numeric(as.character(result_df$SampleSize))
-    
+
     # Convert to wide format
-    result_wide <- tidyr::pivot_wider(result_df, 
-                                    names_from = Statistic, 
+    result_wide <- tidyr::pivot_wider(result_df,
+                                    names_from = Statistic,
                                     values_from = Value)
-    
+
     y_min <- min(result_wide$`5%`, na.rm = TRUE)
-    
+
     if(separate) {
       # Create separate plots for each dimension
       p <- ggplot2::ggplot(result_wide, ggplot2::aes(x = SampleSize, y = mean)) +
-        ggplot2::geom_line(ggplot2::aes(color = Dimension), size = 1.2) +
-        ggplot2::geom_ribbon(ggplot2::aes(ymin = `5%`, ymax = `95%`, 
-                                         fill = Dimension), 
+        ggplot2::geom_line(ggplot2::aes(color = Dimension), linewidth = 1.2) +
+        ggplot2::geom_ribbon(ggplot2::aes(ymin = `5%`, ymax = `95%`,
+                                         fill = Dimension),
                             alpha = 0.2, color = NA) +
         ggplot2::facet_wrap(~ Dimension, ncol = 1, scales = "free_y") +
         ggplot2::scale_color_manual(values = c(
@@ -703,11 +728,11 @@ plot.pc_cv <- function(x, fr = FALSE, separate = FALSE, ...) {
         )
     } else {
       # Create combined plot
-      p <- ggplot2::ggplot(result_wide, 
+      p <- ggplot2::ggplot(result_wide,
                           ggplot2::aes(x = SampleSize, y = mean, color = Dimension)) +
-        ggplot2::geom_line(size = 1.2) +
-        ggplot2::geom_ribbon(ggplot2::aes(ymin = `5%`, ymax = `95%`, 
-                                         fill = Dimension), 
+        ggplot2::geom_line(linewidth = 1.2) +
+        ggplot2::geom_ribbon(ggplot2::aes(ymin = `5%`, ymax = `95%`,
+                                         fill = Dimension),
                             alpha = 0.2, color = NA) +
         ggplot2::scale_color_manual(values = c(
           "positive" = "#5BA3CF",
@@ -730,7 +755,7 @@ plot.pc_cv <- function(x, fr = FALSE, separate = FALSE, ...) {
           legend.title = ggplot2::element_blank(),
           legend.key.width = ggplot2::unit(1, "cm"),
           legend.background = ggplot2::element_rect(
-            size = 0.2,
+            linewidth = 0.2,
             color = 'black',
             linetype = 'solid'
           )
@@ -743,17 +768,17 @@ plot.pc_cv <- function(x, fr = FALSE, separate = FALSE, ...) {
       Value = c(x$results[,1,"positive"],
                 x$results[,1,"negative"],
                 x$results[,1,"dark"]),
-      Dimension = rep(c("positive", "negative", "dark"), 
+      Dimension = rep(c("positive", "negative", "dark"),
                      each = length(x$samples))
     )
-    
+
     y_min <- min(result_df$Value, na.rm = TRUE)
-    
+
     if(separate) {
       # Create separate plots
-      p <- ggplot2::ggplot(result_df, 
+      p <- ggplot2::ggplot(result_df,
                           ggplot2::aes(x = SampleSize, y = Value)) +
-        ggplot2::geom_line(ggplot2::aes(color = Dimension), size = 1.2) +
+        ggplot2::geom_line(ggplot2::aes(color = Dimension), linewidth = 1.2) +
         ggplot2::facet_wrap(~ Dimension, ncol = 1, scales = "free_y") +
         ggplot2::scale_color_manual(values = c(
           "positive" = "#5BA3CF",
@@ -771,9 +796,9 @@ plot.pc_cv <- function(x, fr = FALSE, separate = FALSE, ...) {
         )
     } else {
       # Create combined plot
-      p <- ggplot2::ggplot(result_df, 
+      p <- ggplot2::ggplot(result_df,
                           ggplot2::aes(x = SampleSize, y = Value, color = Dimension)) +
-        ggplot2::geom_line(size = 1.2) +
+        ggplot2::geom_line(linewidth = 1.2) +
         ggplot2::scale_color_manual(values = c(
           "positive" = "#5BA3CF",
           "negative" = "#F6583E",
@@ -790,14 +815,14 @@ plot.pc_cv <- function(x, fr = FALSE, separate = FALSE, ...) {
           legend.title = ggplot2::element_blank(),
           legend.key.width = ggplot2::unit(1, "cm"),
           legend.background = ggplot2::element_rect(
-            size = 0.2,
+            linewidth = 0.2,
             color = 'black',
             linetype = 'solid'
           )
         )
     }
   }
-  
+
   print(p)
   invisible(p)
 }
@@ -818,12 +843,12 @@ plot.pc_cv <- function(x, fr = FALSE, separate = FALSE, ...) {
 pc_effect <- function(positive = NULL, negative = NULL, dark = NULL, items = NULL) {
   # Validate input matrices have same dimensions
   if(!is.null(positive) && !is.null(negative) && !is.null(dark)) {
-    if(!identical(dim(positive), dim(negative)) || 
+    if(!identical(dim(positive), dim(negative)) ||
        !identical(dim(negative), dim(dark))) {
       stop("Positive, negative and dark matrices must have identical dimensions")
     }
   }
-  
+
   structure(
     list(
       positive = positive,
@@ -848,8 +873,8 @@ pc_effect <- function(positive = NULL, negative = NULL, dark = NULL, items = NUL
 #' \donttest{
 #' data(climate_indices)
 #' dataset <- climate_indices[, -1]
-#' pc_matrix_obj <- pcMatrix(dataset, E = 3, tau = 1, 
-#'   metric = "euclidean", h = 1, weighted = TRUE, 
+#' pc_matrix_obj <- pcMatrix(dataset, E = 3, tau = 1,
+#'   metric = "euclidean", h = 1, weighted = TRUE,
 #'   verbose = FALSE)
 #' effects <- pcEffect(pc_matrix_obj)
 #' print(effects)
@@ -859,10 +884,10 @@ pc_effect <- function(positive = NULL, negative = NULL, dark = NULL, items = NUL
 print.pc_effect <- function(x, ...) {
   cat("Pattern Causality Effect Analysis\n")
   cat("--------------------------------\n")
-  
+
   types <- c("Positive", "Negative", "Dark")
   effects <- list(x$positive, x$negative, x$dark)
-  
+
   for (i in seq_along(types)) {
     cat(sprintf("\n%s Causality Effects:\n", types[i]))
     print(round(effects[[i]], 2))
@@ -883,8 +908,8 @@ print.pc_effect <- function(x, ...) {
 #' \donttest{
 #' data(climate_indices)
 #' dataset <- climate_indices[, -1]
-#' pc_matrix_obj <- pcMatrix(dataset, E = 3, tau = 1, 
-#'   metric = "euclidean", h = 1, weighted = TRUE, 
+#' pc_matrix_obj <- pcMatrix(dataset, E = 3, tau = 1,
+#'   metric = "euclidean", h = 1, weighted = TRUE,
 #'   verbose = FALSE)
 #' effects <- pcEffect(pc_matrix_obj)
 #' summary(effects)
@@ -911,9 +936,53 @@ summary.pc_effect <- function(object, ...) {
   )
 }
 
+#' Print Method for pc_effect Summary
+#'
+#' @param x A summary.pc_effect object
+#' @param ... Additional arguments passed to print
+#' @return Invisibly returns the input object
+#' @export
+#' @method print summary.pc_effect
+print.summary.pc_effect <- function(x, ...) {
+  cat("Pattern Causality Effect Summary\n")
+  cat("------------------------------\n")
+  
+  if (!is.null(x$n_components)) {
+    cat("Number of components:", x$n_components, "\n\n")
+  }
+
+  if (!is.null(x$effects_summary)) {
+    cat("Effect Statistics:\n")
+    types <- c("positive", "negative", "dark")
+    for (type in types) {
+      if (!is.null(x$effects_summary[[type]])) {
+        cat(sprintf("\n%s Causality:\n", tools::toTitleCase(type)))
+        print(round(x$effects_summary[[type]], 4), ...)
+      }
+    }
+    cat("\n")
+  }
+  
+  if (!is.null(x$strongest_effects)) {
+    cat("Strongest Effects:\n")
+    types <- c("positive", "negative", "dark")
+    for (i in seq_along(types)) {
+      if (!is.null(x$strongest_effects[[i]])) {
+        effect_info <- x$strongest_effects[[i]]
+        cat(sprintf("%s: %s (%.4f)\n", 
+                   tools::toTitleCase(types[i]), 
+                   effect_info$component, 
+                   effect_info$effect))
+      }
+    }
+  }
+
+  invisible(x)
+}
+
 #' Plot Pattern Causality Effect
 #'
-#' Generates a plot to visualize the effects of positive, negative, or dark 
+#' Generates a plot to visualize the effects of positive, negative, or dark
 #'              causality. Displays the influence exerted versus influence received for each item.
 #' This function generates a scatter plot showing the influence exerted versus
 #' influence received for each item, colored by the difference between exerted and received influence.
@@ -929,37 +998,37 @@ summary.pc_effect <- function(object, ...) {
 #' \donttest{
 #' data(climate_indices)
 #' dataset <- climate_indices[, -1]
-#' pc_matrix_obj <- pcMatrix(dataset, E = 3, tau = 1, 
-#'   metric = "euclidean", h = 1, weighted = TRUE, 
+#' pc_matrix_obj <- pcMatrix(dataset, E = 3, tau = 1,
+#'   metric = "euclidean", h = 1, weighted = TRUE,
 #'   verbose = FALSE)
 #' effects <- pcEffect(pc_matrix_obj)
 #' plot(effects, status = "positive")
 #' }
 #' @export
 #' @method plot pc_effect
-plot.pc_effect <- function(x, status = "positive", add_label = TRUE, 
+plot.pc_effect <- function(x, status = "positive", add_label = TRUE,
                           point_size = 3, label_size = 3, ...) {
   X <- Y <- Value <- Diff <- exerted <- received <- NULL
   if (!status %in% c("positive", "negative", "dark")) {
     stop("'status' must be one of: positive, negative, dark")
   }
-  
+
   # Get the appropriate data frame
   data_to_plot <- switch(status,
     positive = x$positive,
     negative = x$negative,
     dark = x$dark
   )
-  
+
   # Set color scheme based on status
   color_scheme <- switch(status,
     positive = scales::brewer_pal(palette = "Blues")(7)[-1],
     negative = scales::brewer_pal(palette = "Reds")(7)[-1],
     dark = scales::brewer_pal(palette = "Purples")(7)[-1]
   )
-  
+
   # Create plot
-  p <- ggplot2::ggplot(data_to_plot, 
+  p <- ggplot2::ggplot(data_to_plot,
                        ggplot2::aes(x = exerted, y = received)) +
     ggplot2::geom_point(ggplot2::aes(color = Diff), size = point_size) +
     ggplot2::scale_color_gradientn(
@@ -979,7 +1048,7 @@ plot.pc_effect <- function(x, status = "positive", add_label = TRUE,
       axis.line.y = ggplot2::element_line(),
       legend.key = ggplot2::element_blank()
     )
-  
+
   # Add labels if requested
   if (add_label) {
     p <- p + ggrepel::geom_text_repel(
@@ -988,14 +1057,14 @@ plot.pc_effect <- function(x, status = "positive", add_label = TRUE,
       show.legend = FALSE
     )
   }
-  
+
   print(p)
   invisible(p)
 }
 
 compute_matrix_stats <- function(matrix, na.rm = TRUE) {
   if(is.null(matrix)) return(NULL)
-  
+
   list(
     mean = mean(matrix, na.rm = na.rm),
     sd = stats::sd(matrix, na.rm = na.rm),
@@ -1055,6 +1124,32 @@ summary.pc_state <- function(object, ...) {
   )
 }
 
+#' Print Method for pc_state Summary
+#'
+#' @param x A summary.pc_state object
+#' @param ... Additional arguments passed to print
+#' @return Invisibly returns the input object
+#' @export
+#' @method print summary.pc_state
+print.summary.pc_state <- function(x, ...) {
+  cat("State Space Summary\n")
+  cat("-----------------\n")
+
+  if (!is.null(x$dimensions)) {
+    cat("Dimensions:", x$dimensions[1], "x", x$dimensions[2], "\n")
+  }
+
+  if (!is.null(x$parameters)) {
+    cat("Parameters: E =", x$parameters$E, ", tau =", x$parameters$tau, "\n")
+  }
+
+  if (!is.null(x$missing_values)) {
+    cat("Missing values:", x$missing_values, "\n")
+  }
+
+  invisible(x)
+}
+
 #' Plot State Space Reconstruction
 #'
 #' Visualizes the state space reconstruction in 3D.
@@ -1072,15 +1167,15 @@ plot.pc_state <- function(x, style = 2, verbose = FALSE, ...) {
   if (x$parameters$E != 3) {
     stop("3D visualization requires embedding dimension E = 3", call. = FALSE)
   }
-  
+
   if (!(style %in% c(1, 2))) {
     stop("style must be either 1 or 2", call. = FALSE)
   }
-  
+
   if (verbose) {
     cat("Creating state space visualization...\n")
   }
-  
+
   # Create plot based on style
   if (style == 2) {
     plot3D::scatter3D(
@@ -1106,7 +1201,7 @@ plot.pc_state <- function(x, style = 2, verbose = FALSE, ...) {
       ...
     )
   }
-  
+
   invisible(x)
 }
 
@@ -1116,18 +1211,23 @@ plot.pc_state <- function(x, style = 2, verbose = FALSE, ...) {
 .scatter3D_fancy <- function(x, y, z, ..., colvar = z) {
   panelfirst <- function(pmat) {
     XY <- plot3D::trans3D(x, y, z = rep(min(z), length(z)), pmat = pmat)
-    plot3D::scatter2D(XY$x, XY$y, colvar = colvar, pch = ".", 
+    plot3D::scatter2D(XY$x, XY$y, colvar = colvar, pch = ".",
               cex = 2, add = TRUE, colkey = FALSE)
-    
+
     XY <- plot3D::trans3D(x = rep(min(x), length(x)), y, z, pmat = pmat)
-    plot3D::scatter2D(XY$x, XY$y, colvar = colvar, pch = ".", 
+    plot3D::scatter2D(XY$x, XY$y, colvar = colvar, pch = ".",
               cex = 2, add = TRUE, colkey = FALSE)
   }
-  
+
   plot3D::scatter3D(x, y, z, ..., colvar = colvar, panel.first = panelfirst,
             colkey = list(length = 0.5, width = 0.5, cex.clab = 0.75))
 }
 
+#' Print Method for pc_prediction
+#'
+#' @param x A pc_prediction object
+#' @param ... Additional arguments passed to print
+#' @return Invisibly returns the input object
 #' @keywords internal
 print.pc_prediction <- function(x, ...) {
   cat("Pattern Causality Prediction\n")
@@ -1149,5 +1249,33 @@ summary.pc_prediction <- function(object, ...) {
     ),
     class = "summary.pc_prediction"
   )
+}
+
+#' Print Method for pc_prediction Summary
+#'
+#' @param x A summary.pc_prediction object
+#' @param ... Additional arguments passed to print
+#' @return Invisibly returns the input object
+#' @keywords internal
+#' @noRd
+print.summary.pc_prediction <- function(x, ...) {
+  cat("Pattern Causality Prediction Summary\n")
+  cat("----------------------------------\n")
+
+  if (!is.null(x$pattern_length)) {
+    cat("Pattern length:", x$pattern_length, "\n")
+  }
+
+  if (!is.null(x$signature_stats)) {
+    cat("Signature Statistics:\n")
+    print(x$signature_stats, ...)
+    cat("\n")
+  }
+
+  if (!is.null(x$sparsity)) {
+    cat("Sparsity:", round(x$sparsity, 4), "\n")
+  }
+
+  invisible(x)
 }
 

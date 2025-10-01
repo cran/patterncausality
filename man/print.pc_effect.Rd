@@ -23,8 +23,8 @@ for positive, negative, and dark causality types.
 \donttest{
 data(climate_indices)
 dataset <- climate_indices[, -1]
-pc_matrix_obj <- pcMatrix(dataset, E = 3, tau = 1, 
-  metric = "euclidean", h = 1, weighted = TRUE, 
+pc_matrix_obj <- pcMatrix(dataset, E = 3, tau = 1,
+  metric = "euclidean", h = 1, weighted = TRUE,
   verbose = FALSE)
 effects <- pcEffect(pc_matrix_obj)
 print(effects)

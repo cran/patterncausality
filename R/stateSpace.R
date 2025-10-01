@@ -1,5 +1,5 @@
 #' State Space Reconstruction Analysis
-#' 
+#'
 #' @title State Space Reconstruction
 #' @description Reconstructs the state space of a time series using delay embedding,
 #' creating a matrix where each row represents a point in the reconstructed space.
@@ -43,16 +43,16 @@ stateSpace <- function(ts, E, tau, verbose = FALSE) {
     stop("Time series must be numeric", call. = FALSE)
   }
   if (E < 2) {
-    stop("Embedding dimension must be greater than 1", call. = FALSE)
+    stop("E must be an integer greater than 1", call. = FALSE)
   }
   if (tau < 1) {
     stop("Time delay must be positive", call. = FALSE)
   }
-  
+
   if (verbose) {
     cat("Reconstructing state space...\n")
   }
-  
+
   # Create embedding matrix
   M <- matrix(NA_real_, length(ts) - (E - 1) * tau , E)
   for (i in 1:nrow(M)) {
@@ -61,7 +61,7 @@ stateSpace <- function(ts, E, tau, verbose = FALSE) {
       M[i,] <- rep(NA_real_, E)
     }
   }
-  
+
   # Create and return pc_state object
   result <- structure(
     list(
@@ -75,6 +75,6 @@ stateSpace <- function(ts, E, tau, verbose = FALSE) {
     ),
     class = "pc_state"
   )
-  
+
   return(result)
 }

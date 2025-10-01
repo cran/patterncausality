@@ -1,12 +1,12 @@
 #' Calculate Distance Matrix
-#' 
+#'
 #' @title Calculate Distance Matrix
-#' @description Internal function that computes pairwise distances between points 
-#' in a state space matrix. This function is a wrapper around stats::dist that 
-#' provides additional input validation and consistent output formatting for the 
+#' @description Internal function that computes pairwise distances between points
+#' in a state space matrix. This function is a wrapper around stats::dist that
+#' provides additional input validation and consistent output formatting for the
 #' pattern causality analysis framework.
 #'
-#' @param M Numeric matrix, where each row represents a point in the reconstructed 
+#' @param M Numeric matrix, where each row represents a point in the reconstructed
 #' state space
 #' @param metric Character string specifying the distance metric:
 #'   \itemize{
@@ -27,22 +27,22 @@ distanceMatrix <- function(M, metric = "euclidean", as_matrix = TRUE, verbose = 
   if(!is.matrix(M) || !is.numeric(M)) {
     stop("M must be a numeric matrix", call. = FALSE)
   }
-  
+
   valid_metrics <- c("euclidean", "maximum", "manhattan")
   if(!metric %in% valid_metrics) {
-    stop(sprintf("metric must be one of: %s", 
-                paste(valid_metrics, collapse = ", ")), 
+    stop(sprintf("metric must be one of: %s",
+                paste(valid_metrics, collapse = ", ")),
          call. = FALSE)
   }
-  
+
   if(verbose) {
-    cat(sprintf("Computing %s distances for matrix with dimensions %d x %d\n", 
+    cat(sprintf("Computing %s distances for matrix with dimensions %d x %d\n",
                 metric, nrow(M), ncol(M)))
   }
-  
+
   # Compute distances
   d <- stats::dist(M, method = metric, upper = TRUE)
-  
+
   # Return result in requested format
   if(as_matrix) {
     if(verbose) cat("Converting to full matrix\n")

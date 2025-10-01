@@ -3,19 +3,16 @@
 \name{distanceMetric}
 \alias{distanceMetric}
 \alias{distanceMetric.default}
-\alias{distanceMetric.custom}
 \title{Distance Metric Interface}
 \usage{
 distanceMetric(x, method = "euclidean", ...)
 
 \method{distanceMetric}{default}(x, method = "euclidean", ...)
-
-\method{distanceMetric}{custom}(x, method, ...)
 }
 \arguments{
 \item{x}{Input data matrix or vector}
 
-\item{method}{Custom function to compute distances}
+\item{method}{Either a character string specifying built-in method ("euclidean", "manhattan", "maximum") or a custom function}
 
 \item{...}{Additional arguments passed to methods}
 }
@@ -31,19 +28,15 @@ Generic Interface for Distance Metrics
 }
 \section{Methods (by class)}{
 \itemize{
-\item \code{distanceMetric(default)}: Default method using stats::dist
-
-\item \code{distanceMetric(custom)}: Custom distance metric implementation
+\item \code{distanceMetric(default)}: Default method for built-in metrics
 
 }}
 \examples{
-\dontrun{
-# Using default method
+# Using built-in method
 x <- matrix(rnorm(100), ncol=2)
 d1 <- distanceMetric(x, "euclidean")
 
 # Using custom method
-custom_dist <- function(x) as.dist(crossprod(x))
+custom_dist <- function(x) as.dist(crossprod(t(x)))
 d2 <- distanceMetric(x, method=custom_dist)
-}
 }

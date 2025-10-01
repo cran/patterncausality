@@ -68,8 +68,8 @@ delay for their effectiveness in detecting different types of causality:
 data(climate_indices)
 dataset <- climate_indices[, -1]
 optimalParams <- optimalParametersSearch(
-  Emax = 3, 
-  tauMax = 3, 
+  Emax = 3,
+  tauMax = 3,
   metric = "euclidean",
   dataset = dataset,
   h = 1,

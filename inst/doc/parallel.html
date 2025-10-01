@@ -430,7 +430,7 @@ computing can significantly reduce computation time:</p>
 <span id="cb5-7"><a href="#cb5-7" tabindex="-1"></a><span class="co"># Function to measure execution time</span></span>
 <span id="cb5-8"><a href="#cb5-8" tabindex="-1"></a>run_matrix_test <span class="ot">&lt;-</span> <span class="cf">function</span>(n_cores) {</span>
 <span id="cb5-9"><a href="#cb5-9" tabindex="-1"></a>  start_time <span class="ot">&lt;-</span> <span class="fu">Sys.time</span>()</span>
-<span id="cb5-10"><a href="#cb5-10" tabindex="-1"></a>  </span>
+<span id="cb5-10"><a href="#cb5-10" tabindex="-1"></a></span>
 <span id="cb5-11"><a href="#cb5-11" tabindex="-1"></a>  result <span class="ot">&lt;-</span> <span class="fu">pcMatrix</span>(</span>
 <span id="cb5-12"><a href="#cb5-12" tabindex="-1"></a>    <span class="at">dataset =</span> test_data,</span>
 <span id="cb5-13"><a href="#cb5-13" tabindex="-1"></a>    <span class="at">E =</span> <span class="dv">3</span>,</span>
@@ -441,7 +441,7 @@ computing can significantly reduce computation time:</p>
 <span id="cb5-18"><a href="#cb5-18" tabindex="-1"></a>    <span class="at">n_cores =</span> n_cores,</span>
 <span id="cb5-19"><a href="#cb5-19" tabindex="-1"></a>    <span class="at">verbose =</span> <span class="cn">TRUE</span></span>
 <span id="cb5-20"><a href="#cb5-20" tabindex="-1"></a>  )</span>
-<span id="cb5-21"><a href="#cb5-21" tabindex="-1"></a>  </span>
+<span id="cb5-21"><a href="#cb5-21" tabindex="-1"></a></span>
 <span id="cb5-22"><a href="#cb5-22" tabindex="-1"></a>  end_time <span class="ot">&lt;-</span> <span class="fu">Sys.time</span>()</span>
 <span id="cb5-23"><a href="#cb5-23" tabindex="-1"></a>  <span class="fu">return</span>(<span class="fu">difftime</span>(end_time, start_time, <span class="at">units =</span> <span class="st">&quot;secs&quot;</span>))</span>
 <span id="cb5-24"><a href="#cb5-24" tabindex="-1"></a>}</span>

@@ -1,7 +1,7 @@
 Package: patterncausality
 Type: Package
 Title: Pattern Causality Algorithm
-Version: 0.2.2
+Version: 0.2.3
 Authors@R: c( person("Stavros", "Stavroglou", role = c("aut", "cre"),
                      email = "stavros.k.stavroglou@gmail.com",
                      comment = c(ORCID = "0000-0003-3931-0391")),
@@ -12,7 +12,7 @@ Authors@R: c( person("Stavros", "Stavroglou", role = c("aut", "cre"),
                      email = "huiw1128@gmail.com",
                      comment = c(ORCID = "0009-0006-0095-0243")))
 Maintainer: Stavros Stavroglou <stavros.k.stavroglou@gmail.com>
-Description: A comprehensive package for detecting and analyzing causal relationships in complex systems using pattern-based approaches. Key features include state space reconstruction, pattern identification, and causality strength evaluation.
+Description: Pattern causality is a novel approach for detecting the hidden causality in the complex system.
 License: GPL-3 | file LICENSE
 Depends: R (>= 4.1.0)
 Imports: stats, plot3D, ggplot2, reshape2, grid, ggthemes, tidyr,
@@ -28,11 +28,11 @@ Config/testthat/edition: 3
 RoxygenNote: 7.3.2
 VignetteBuilder: knitr
 NeedsCompilation: no
-Packaged: 2025-09-03 20:31:52 UTC; huiwang
+Packaged: 2025-09-25 15:52:24 UTC; huiwang
 Author: Stavros Stavroglou [aut, cre] (ORCID:
     <https://orcid.org/0000-0003-3931-0391>),
   Athanasios Pantelous [aut] (ORCID:
     <https://orcid.org/0000-0001-5738-1471>),
   Hui Wang [aut] (ORCID: <https://orcid.org/0009-0006-0095-0243>)
 Repository: CRAN
-Date/Publication: 2025-09-04 06:40:16 UTC
+Date/Publication: 2025-10-01 08:40:02 UTC

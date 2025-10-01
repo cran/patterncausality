@@ -1,8 +1,8 @@
 #' Calculate Pattern Causality Accuracy
-#' 
+#'
 #' @title Calculate Pattern Causality Accuracy
-#' @description Evaluates the causality prediction accuracy across multiple time series 
-#' within a dataset using the PC Mk. II Light method. This function analyzes pairwise 
+#' @description Evaluates the causality prediction accuracy across multiple time series
+#' within a dataset using the PC Mk. II Light method. This function analyzes pairwise
 #' causality relationships and computes different types of causality measures.
 #'
 #' @param dataset A matrix or data frame where each column represents a time series
@@ -30,13 +30,13 @@
 #' \donttest{
 #' data(climate_indices)
 #' data <- climate_indices[, -1]
-#' results <- pcAccuracy(dataset = data, E = 3, tau = 1, 
-#'                      metric = "euclidean", h = 1, 
+#' results <- pcAccuracy(dataset = data, E = 3, tau = 1,
+#'                      metric = "euclidean", h = 1,
 #'                      weighted = TRUE, verbose = TRUE)
 #' print(results)
 #' }
 #'
-#' @seealso 
+#' @seealso
 #' \code{\link{pcMatrix}} for analyzing individual causality matrices
 #' \code{\link{pcLightweight}} for pairwise causality analysis
 #'
@@ -47,14 +47,14 @@ pcAccuracy <- function(dataset, E, tau, metric="euclidean", h, weighted, distanc
   if (!is.matrix(dataset) && !is.data.frame(dataset)) {
     stop("dataset must be a matrix or data frame", call. = FALSE)
   }
-  
+
   if(!is.character(metric) || !metric %in% c("euclidean", "manhattan", "maximum")) {
     stop("metric must be one of: 'euclidean', 'manhattan', 'maximum'", call. = FALSE)
   }
-  
+
   dataset <- as.matrix(dataset)
   n_series <- ncol(dataset)
-  
+
   # Initialize storage matrices with NA_real_
   matrices <- list(
     total = matrix(NA_real_, n_series, n_series),
@@ -62,31 +62,31 @@ pcAccuracy <- function(dataset, E, tau, metric="euclidean", h, weighted, distanc
     negative = matrix(NA_real_, n_series, n_series),
     dark = matrix(NA_real_, n_series, n_series)
   )
-  
+
   if (verbose) {
     cat("Analyzing causality relationships...\n")
   }
-  
+
   # Pre-check feasibility for all series
   feasible_series <- sapply(1:n_series, function(i) {
     check_causality_points(E, tau, h, dataset[, i], verbose = FALSE)$feasible
   })
-  
+
   # Main analysis loop with pre-checked series
   for (i in which(feasible_series)) {
     for (j in which(feasible_series)) {
       if (i != j) {
         result <- pcLightweight(dataset[,i], dataset[,j],
                               E, tau, metric=metric, h, weighted, distance_fn,
-                              state_space_fn = state_space_fn, 
+                              state_space_fn = state_space_fn,
                               relative = relative,
                               verbose = FALSE)
-        
+
         matrices$total[i,j] <- result$total
         matrices$positive[i,j] <- result$positive
         matrices$negative[i,j] <- result$negative
         matrices$dark[i,j] <- result$dark
-        
+
         if (verbose) {
           counter <- (i-1)*(n_series-1) + j
           report_progress(counter, n_series * (n_series-1), "Analyzing relationships", verbose)
@@ -94,17 +94,17 @@ pcAccuracy <- function(dataset, E, tau, metric="euclidean", h, weighted, distanc
       }
     }
   }
-  
+
   if (verbose) {
     cat("\nComputing summary statistics...\n")
   }
-  
+
   # Compute summary statistics
   total_mean <- mean(matrices$total, na.rm = TRUE)
   positive_mean <- mean(matrices$positive, na.rm = TRUE)
   negative_mean <- mean(matrices$negative, na.rm = TRUE)
   dark_mean <- mean(matrices$dark, na.rm = TRUE)
-  
+
   # Create pc_accuracy object
   result <- structure(
     list(
@@ -117,6 +117,6 @@ pcAccuracy <- function(dataset, E, tau, metric="euclidean", h, weighted, distanc
     ),
     class = "pc_accuracy"
   )
-  
+
   return(result)
 }

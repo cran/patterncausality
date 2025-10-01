@@ -25,7 +25,8 @@ pcMatrix(
 
 \item{tau}{Integer; time delay}
 
-\item{metric}{Character; distance metric ("euclidean", "manhattan", "maximum")}
+\item{metric}{Character; distance metric ("euclidean", "manhattan",
+"maximum")}
 
 \item{h}{Integer; prediction horizon}
 
@@ -35,7 +36,9 @@ pcMatrix(
 
 \item{state_space_fn}{Optional custom state space reconstruction function}
 
-\item{relative}{Logical; if TRUE calculates relative changes ((new-old)/old), if FALSE calculates absolute changes (new-old) in signature space. Default is TRUE.}
+\item{relative}{Logical; if TRUE calculates relative changes ((new-old)/old),
+if FALSE calculates absolute changes (new-old) in signature space.
+Default is TRUE.}
 
 \item{verbose}{Logical; whether to print progress}
 
@@ -45,7 +48,8 @@ pcMatrix(
 A pc_matrix object containing causality matrices
 }
 \description{
-Analyzes pattern causality relationships between multiple time series
+Analyzes pattern causality relationships between multiple
+time series
 by computing pairwise causality measures and organizing them into matrices.
 }
 \details{
