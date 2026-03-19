@@ -99,7 +99,7 @@ Y <- climate_indices$AAO
 
 # Basic cross-validation
 cv_result <- pcCrossValidation(
-  X, Y,
+  X, Y, 
   E = 3, tau = 1,
   metric = "euclidean",
   h = 1,

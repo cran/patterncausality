@@ -34,8 +34,8 @@ negative, and dark causality matrices, along with item names.
 \examples{
 data(climate_indices)
 dataset <- climate_indices[, -1]
-pc_matrix_obj <- pcMatrix(dataset, E = 3, tau = 1,
-  metric = "euclidean", h = 1, weighted = TRUE,
+pc_matrix_obj <- pcMatrix(dataset, E = 3, tau = 1, 
+  metric = "euclidean", h = 1, weighted = TRUE, 
   verbose = FALSE)
 print(pc_matrix_obj)
 }

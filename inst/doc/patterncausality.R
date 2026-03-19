@@ -61,7 +61,7 @@ plot_components(pc)
 
 ## -----------------------------------------------------------------------------
 # Example with both weighted and relative TRUE
-pc_rel_weighted <- pcLightweight(X, Y, E = 3, tau = 2, metric = "euclidean",
+pc_rel_weighted <- pcLightweight(X, Y, E = 3, tau = 2, metric = "euclidean", 
                                h = 1, weighted = TRUE, relative = TRUE)
 print(pc_rel_weighted)
 

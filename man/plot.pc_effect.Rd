@@ -39,8 +39,8 @@ influence received for each item, colored by the difference between exerted and 
 \donttest{
 data(climate_indices)
 dataset <- climate_indices[, -1]
-pc_matrix_obj <- pcMatrix(dataset, E = 3, tau = 1,
-  metric = "euclidean", h = 1, weighted = TRUE,
+pc_matrix_obj <- pcMatrix(dataset, E = 3, tau = 1, 
+  metric = "euclidean", h = 1, weighted = TRUE, 
   verbose = FALSE)
 effects <- pcEffect(pc_matrix_obj)
 plot(effects, status = "positive")

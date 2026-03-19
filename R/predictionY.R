@@ -1,8 +1,8 @@
 #' Predict Signature and Pattern Vectors
-#'
+#' 
 #' @title Signature and Pattern Vector Prediction
-#' @description Predicts signature and pattern vectors for a given state based on
-#' neural network projections and weights. Implements adaptive sparsity handling
+#' @description Predicts signature and pattern vectors for a given state based on 
+#' neural network projections and weights. Implements adaptive sparsity handling 
 #' through zero tolerance thresholds.
 #'
 #' @details
@@ -39,12 +39,12 @@
 predictionY <- function(projectedNN, zeroTolerance = NULL) {
   # Extract embedding dimension
   E <- ncol(projectedNN$signatures) + 1
-
+  
   # Set default zero tolerance
   if(is.null(zeroTolerance)) {
     zeroTolerance <- E - 1
   }
-
+  
   # Compute predicted signature
   if (E >= 3) {
     predictedSignatureY <- rep(NA_real_, E - 1)
@@ -64,10 +64,10 @@ predictionY <- function(projectedNN, zeroTolerance = NULL) {
       sum(projectedNN$signatures * projectedNN$weights)
     }
   }
-
+  
   # Compute pattern vector
   predictedPatternY <- patternVectorDifference(predictedSignatureY)
-
+  
   # Create and return pc_prediction object
   structure(
     list(

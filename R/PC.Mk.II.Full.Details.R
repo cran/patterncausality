@@ -1,8 +1,8 @@
 #' Calculate Full Details Pattern Causality Analysis
-#'
+#' 
 #' @title Calculate Full Details Pattern Causality Analysis
-#' @description Implements an advanced pattern causality algorithm to explore the
-#' causal relationships between two time series datasets. This function provides
+#' @description Implements an advanced pattern causality algorithm to explore the 
+#' causal relationships between two time series datasets. This function provides 
 #' comprehensive analysis of causality patterns, including state space reconstruction,
 #' pattern identification, and causality strength evaluation.
 #'
@@ -51,27 +51,27 @@ pcFullDetails <- function(X, Y, E, tau, h, weighted,
                          verbose = FALSE) {
   # Input validation
   validate_inputs(X, Y, E, tau, metric, h, weighted, distance_fn)
-
+  
   # Initialize components
   components <- initialize_components(E, tau)
   hashedpatterns <- components$hashedpatterns
-
+  
   # Compute state and pattern spaces
   spaces <- compute_spaces(X, Y, E, tau, metric,
                          distance_fn = distance_fn,
                          state_space_fn = state_space_fn,
                          relative = relative,
                          verbose = verbose)
-
+  
   # Check causality points
   causality_check <- check_causality_points(E, tau, h, X, verbose)
   if(!causality_check$feasible) {
     stop("Insufficient data length for analysis", call. = FALSE)
   }
-
+  
   # Initialize matrices and data structures
   matrices <- initialize_matrices(X, Y, E, causality_check$FCP, verbose)
-
+  
   # Main analysis loop
   real_loop <- numeric(0)
   for(i in causality_check$al_loop_dur) {
@@ -86,10 +86,10 @@ pcFullDetails <- function(X, Y, E, tau, h, weighted,
         i = i,
         h = h
       )
-
+      
       if(!anyNA(NNx$dists) && !anyNA(spaces$Dy[i, NNx$times + h])) {
         real_loop <- c(real_loop, i)
-
+        
         projNNy <- projectedNNsInfo(
           My = spaces$My,
           Dy = spaces$Dy,
@@ -99,9 +99,9 @@ pcFullDetails <- function(X, Y, E, tau, h, weighted,
           i = i,
           h = h
         )
-
+        
         matrices <- update_matrices(
-          matrices, spaces, NNx, projNNy,
+          matrices, spaces, NNx, projNNy, 
           i, h, weighted, verbose, hashedpatterns
         )
       }
@@ -113,13 +113,13 @@ pcFullDetails <- function(X, Y, E, tau, h, weighted,
       verbose
     )
   }
-
+  
   if(verbose) {
     cat("\nComputing final results...\n")
   }
-
+  
   spectrums <- compute_causality_spectrums(matrices$pc_matrices, real_loop, hashedpatterns, X)
-
+  
   result <- structure(
     list(
       backtest_time = causality_check$al_loop_dur,
@@ -139,7 +139,7 @@ pcFullDetails <- function(X, Y, E, tau, h, weighted,
     ),
     class = "pc_full_details"
   )
-
+  
   return(result)
 }
 

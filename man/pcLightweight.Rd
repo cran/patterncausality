@@ -73,8 +73,8 @@ The function implements these key steps:
 data(climate_indices)
 X <- climate_indices$AO
 Y <- climate_indices$AAO
-result <- pcLightweight(X, Y, E = 3, tau = 1,
-                       metric = "euclidean", h = 2,
+result <- pcLightweight(X, Y, E = 3, tau = 1, 
+                       metric = "euclidean", h = 2, 
                        weighted = TRUE, verbose = FALSE)
 print(result)
 summary(result)

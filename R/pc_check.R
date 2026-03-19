@@ -12,8 +12,7 @@ pc_check <- function(feasible, required_length, available_length, parameters) {
   )
 }
 
-#' @keywords internal
-#' @noRd
+#' @export
 print.pc_check <- function(x, ...) {
   cat("Causality Analysis Feasibility Check\n")
   cat("-----------------------------------\n")
@@ -25,4 +24,4 @@ print.pc_check <- function(x, ...) {
   cat("  tau:", x$parameters$tau, "\n")
   cat("  h:", x$parameters$h, "\n")
   cat("\n")
-}
+} 

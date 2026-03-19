@@ -1,8 +1,8 @@
 #' Climate Indices Dataset
-#'
+#' 
 #' @title Climate Indices Dataset
 #' @description A comprehensive time series dataset containing various climate indices
-#' used for pattern causality analysis. This dataset includes multiple climate
+#' used for pattern causality analysis. This dataset includes multiple climate 
 #' indicators measured over time.
 #'
 #' @source \url{https://www.cpc.ncep.noaa.gov/}
@@ -22,7 +22,7 @@
 "climate_indices"
 
 #' Dow Jones Stock Price Dataset
-#'
+#' 
 #' @title Dow Jones Stock Price Dataset
 #' @description A comprehensive dataset containing daily stock prices for 29 companies
 #' listed in the Dow Jones Industrial Average (DJIA). The dataset includes opening,
@@ -38,9 +38,9 @@
 "DJS"
 
 #' Illapel Ecological Dataset
-#'
+#' 
 #' @title Illapel Ecological Dataset
-#' @description Raw rodent and rainfall data collected from the Las Chinchillas
+#' @description Raw rodent and rainfall data collected from the Las Chinchillas 
 #' National Reserve near Illapel, Coquimbo Region of Chile. This dataset provides
 #' ecological time series for studying species interactions and environmental effects.
 #'

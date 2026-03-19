@@ -61,8 +61,8 @@ Calculate Pattern Causality Accuracy
 \donttest{
 data(climate_indices)
 data <- climate_indices[, -1]
-results <- pcAccuracy(dataset = data, E = 3, tau = 1,
-                     metric = "euclidean", h = 1,
+results <- pcAccuracy(dataset = data, E = 3, tau = 1, 
+                     metric = "euclidean", h = 1, 
                      weighted = TRUE, verbose = TRUE)
 print(results)
 }

@@ -1,8 +1,8 @@
 #' Fill Pattern Causality Matrix
-#'
+#' 
 #' @title Fill Pattern Causality Matrix
-#' @description Internal function that computes causality strengths by comparing
-#' predicted and real patterns/signatures in a system's dynamic model. Uses either
+#' @description Internal function that computes causality strengths by comparing 
+#' predicted and real patterns/signatures in a system's dynamic model. Uses either 
 #' weighted or binary normalization to quantify causal influences.
 #'
 #' @param weighted Logical; if TRUE, uses error function for normalization
@@ -22,27 +22,27 @@
 #'
 #' @keywords internal
 #' @noRd
-fillPCMatrix <- function(weighted, predictedPatternY, realPatternY,
-                        predictedSignatureY, realSignatureY,
-                        patternX, signatureX,
+fillPCMatrix <- function(weighted, predictedPatternY, realPatternY, 
+                        predictedSignatureY, realSignatureY, 
+                        patternX, signatureX, 
                         verbose = FALSE) {
   # Input validation
   if(!is.logical(weighted)) {
     stop("weighted must be TRUE or FALSE", call. = FALSE)
   }
-
+  
   if(!is.numeric(c(predictedPatternY, realPatternY, patternX))) {
     stop("All patterns must be numeric", call. = FALSE)
   }
-
+  
   if(!is.numeric(c(predictedSignatureY, realSignatureY, signatureX))) {
     stop("All signatures must be numeric vectors", call. = FALSE)
   }
-
+  
   # Initialize results with NA_real_
   predictedCausalityStrength <- NA_real_
   realCausalityStrength <- NA_real_
-
+  
   if (!anyNA(c(predictedPatternY, realPatternY, patternX))) {
     if (length(predictedPatternY) > 0 && length(patternX) > 0) {
       if (verbose) {
@@ -50,12 +50,12 @@ fillPCMatrix <- function(weighted, predictedPatternY, realPatternY,
         cat("Predicted pattern:", predictedPatternY, "\n")
         cat("Real pattern:", realPatternY, "\n")
       }
-
+      
       if (predictedPatternY == realPatternY) {
         if (weighted) {
-          predictedCausalityStrength <- erf(norm_vec(predictedSignatureY) /
+          predictedCausalityStrength <- erf(norm_vec(predictedSignatureY) / 
                                           norm_vec(signatureX))
-          realCausalityStrength <- erf(norm_vec(realSignatureY) /
+          realCausalityStrength <- erf(norm_vec(realSignatureY) / 
                                      norm_vec(signatureX))
         } else {
           predictedCausalityStrength <- 1
@@ -69,7 +69,7 @@ fillPCMatrix <- function(weighted, predictedPatternY, realPatternY,
       stop("Pattern vectors cannot be empty", call. = FALSE)
     }
   }
-
+  
   # Create and return pc_strength object
   pc_strength(
     real = realCausalityStrength,

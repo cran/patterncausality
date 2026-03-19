@@ -24,7 +24,7 @@ Pattern causality analysis involves computationally intensive tasks, especially 
 
 The parallel computing features in this package are particularly effective for:
 
-1. **Bootstrap Analysis**:
+1. **Bootstrap Analysis**: 
    - Distributing bootstrap iterations across multiple cores
    - Ideal for uncertainty quantification
    - Significant speed improvements for large numbers of iterations
@@ -105,7 +105,7 @@ colnames(test_data) <- paste0("Series_", 1:n_series)
 # Function to measure execution time
 run_matrix_test <- function(n_cores) {
   start_time <- Sys.time()
-
+  
   result <- pcMatrix(
     dataset = test_data,
     E = 3,
@@ -116,7 +116,7 @@ run_matrix_test <- function(n_cores) {
     n_cores = n_cores,
     verbose = TRUE
   )
-
+  
   end_time <- Sys.time()
   return(difftime(end_time, start_time, units = "secs"))
 }

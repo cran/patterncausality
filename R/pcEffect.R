@@ -1,8 +1,8 @@
 #' Calculate Pattern Causality Effect Analysis
-#'
+#' 
 #' @title Pattern Causality Effect Analysis
-#' @description Analyzes pattern causality matrices to compute and summarize the
-#' directional effects of different causality types (positive, negative, dark)
+#' @description Analyzes pattern causality matrices to compute and summarize the 
+#' directional effects of different causality types (positive, negative, dark) 
 #' between system components.
 #'
 #' @details
@@ -37,15 +37,15 @@
 #' \donttest{
 #' data(climate_indices)
 #' dataset <- climate_indices[, -1]
-#' pcmatrix <- pcMatrix(dataset, E = 3, tau = 1,
-#'                     metric = "euclidean", h = 1,
+#' pcmatrix <- pcMatrix(dataset, E = 3, tau = 1, 
+#'                     metric = "euclidean", h = 1, 
 #'                     weighted = TRUE)
 #' effects <- pcEffect(pcmatrix)
 #' print(effects)
 #' plot(effects)
 #' }
 #'
-#' @seealso
+#' @seealso 
 #' \code{\link{pcMatrix}} for generating causality matrices
 #' \code{\link{plot.pc_effect}} for visualizing causality effects
 #'
@@ -55,23 +55,23 @@ pcEffect <- function(pcmatrix, verbose = FALSE) {
   if (!inherits(pcmatrix, "pc_matrix")) {
     stop("Input must be a pc_matrix object", call. = FALSE)
   }
-
+  
   # Check if the matrix is square
   if (!isTRUE(pcmatrix$is_square)) {
     stop("Input pc_matrix object must have a square matrix. Use pcMatrix function instead of pcCrossMatrix.", call. = FALSE)
   }
-
+  
   if (verbose) {
     cat("Processing causality matrices...\n")
   }
-
+  
   # Initialize matrices with NA_real_
   matrices <- list(
     positive = replace(pcmatrix$positive, is.na(pcmatrix$positive), 0) * 100,
     negative = replace(pcmatrix$negative, is.na(pcmatrix$negative), 0) * 100,
     dark = replace(pcmatrix$dark, is.na(pcmatrix$dark), 0) * 100
   )
-
+  
   # Compute effects
   effects <- lapply(matrices, function(m) {
     data.frame(
@@ -81,7 +81,7 @@ pcEffect <- function(pcmatrix, verbose = FALSE) {
       row.names = pcmatrix$items
     )
   })
-
+  
   # Compute summary statistics
   summary_stats <- lapply(effects, function(df) {
     apply(df, 2, function(x) c(
@@ -91,11 +91,11 @@ pcEffect <- function(pcmatrix, verbose = FALSE) {
       max = max(x, na.rm = TRUE)
     ))
   })
-
+  
   if (verbose) {
     cat("Computing summary statistics...\n")
   }
-
+  
   # Create and return pc_effect object
   result <- structure(
     list(
@@ -107,6 +107,6 @@ pcEffect <- function(pcmatrix, verbose = FALSE) {
     ),
     class = "pc_effect"
   )
-
+  
   return(result)
 }

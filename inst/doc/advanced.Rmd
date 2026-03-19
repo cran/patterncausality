@@ -65,19 +65,19 @@ denoised_state_space <- function(x, E, tau) {
   for(i in (window+1):(n-window)) {
     x_smooth[i] <- median(x[(i-window):(i+window)])
   }
-
+  
   # Construct state space
   n_out <- length(x_smooth) - (E-1)*tau
   mat <- matrix(NA, nrow = n_out, ncol = E)
   for(i in 1:E) {
     mat[,i] <- x_smooth[1:n_out + (i-1)*tau]
   }
-
+  
   # Ensure no NA values
   if(any(is.na(mat))) {
     mat[is.na(mat)] <- mean(mat, na.rm = TRUE)
   }
-
+  
   list(matrix = mat)
 }
 ```

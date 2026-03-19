@@ -1,8 +1,8 @@
 #' Perform Pattern Causality Cross-Validation Analysis
-#'
+#' 
 #' @title Pattern Causality Cross-Validation Analysis
-#' @description Evaluates the robustness of pattern causality measures through
-#' repeated sampling analysis. This function performs cross-validation by analyzing
+#' @description Evaluates the robustness of pattern causality measures through 
+#' repeated sampling analysis. This function performs cross-validation by analyzing 
 #' multiple subsets of the data to assess the stability of causality relationships.
 #'
 #' @param X Numeric vector representing the first time series.
@@ -56,17 +56,17 @@
 #' data(climate_indices)
 #' X <- climate_indices$AO
 #' Y <- climate_indices$AAO
-#'
+#' 
 #' # Basic cross-validation
 #' cv_result <- pcCrossValidation(
-#'   X, Y,
+#'   X, Y, 
 #'   E = 3, tau = 1,
 #'   metric = "euclidean",
 #'   h = 1,
 #'   weighted = FALSE,
 #'   numberset = c(100, 200, 300)
 #' )
-#'
+#' 
 #' # Cross-validation with bootstrap
 #' cv_result_boot <- pcCrossValidation(
 #'   X, Y,
@@ -79,48 +79,48 @@
 #'   bootstrap = 100
 #' )
 #' }
-#' @seealso
+#' @seealso 
 #' \code{\link{plot.pc_cv}} for visualizing cross-validation results
 #' \code{\link{print.pc_cv}} for printing cross-validation results
 #' \code{\link{summary.pc_cv}} for summarizing cross-validation results
 #'
 #' @export
-pcCrossValidation <- function(X, Y, E, tau, metric = "euclidean", h, weighted,
+pcCrossValidation <- function(X, Y, E, tau, metric = "euclidean", h, weighted,  
                              distance_fn = NULL,
                              state_space_fn = NULL,
-                             numberset, random = TRUE, bootstrap = 1,
+                             numberset, random = TRUE, bootstrap = 1, 
                              verbose = FALSE,
                              n_cores = 1,
                              relative = TRUE) {
-
+  
   # Input validation
-  if (!is.logical(random)) {
+  if(!is.logical(random)) {
     stop("random must be logical", call. = FALSE)
   }
-  if (!is.numeric(numberset) || any(numberset <= 0)) {
+  if(!is.numeric(numberset) || any(numberset <= 0)) {
     stop("numberset must contain positive numeric values", call. = FALSE)
   }
-  if (max(numberset) > length(X)) {
+  if(max(numberset) > length(X)) {
     stop("Sample sizes cannot exceed time series length", call. = FALSE)
   }
-  if (!is.numeric(bootstrap) || bootstrap < 1) {
+  if(!is.numeric(bootstrap) || bootstrap < 1) {
     stop("bootstrap must be a positive integer", call. = FALSE)
   }
-  if (!random && bootstrap > 1) {
+  if(!random && bootstrap > 1) {
     warning("bootstrap is ignored when random = FALSE", call. = FALSE)
     bootstrap <- 1
   }
-  if (!is.numeric(n_cores) || n_cores < 1) {
+  if(!is.numeric(n_cores) || n_cores < 1) {
     stop("n_cores must be a positive integer", call. = FALSE)
   }
-
+  
   # Validate core inputs
   validate_inputs(X, Y, E, tau, metric, h, weighted, distance_fn)
-
+  
   # Initialize results array
   numbers <- sort(numberset)
-  if (random && bootstrap > 1) {
-    results <- array(NA_real_,
+  if(random && bootstrap > 1) {
+    results <- array(NA_real_, 
                     dim = c(length(numbers), 4, 3),
                     dimnames = list(
                       as.character(numbers),
@@ -136,36 +136,36 @@ pcCrossValidation <- function(X, Y, E, tau, metric = "euclidean", h, weighted,
                       c("positive", "negative", "dark")
                     ))
   }
-
-  if (verbose) {
+  
+  if(verbose) {
     cat("Performing cross-validation analysis...\n")
   }
-
+  
   # Setup parallel computation if needed
-  if (n_cores > 1 && random && bootstrap > 1) {
-    if (verbose) cat("Setting up parallel computation with", n_cores, "cores...\n")
+  if(n_cores > 1 && random && bootstrap > 1) {
+    if(verbose) cat("Setting up parallel computation with", n_cores, "cores...\n")
     cl <- parallel::makeCluster(n_cores)
     on.exit(parallel::stopCluster(cl))
-
+    
     # Export required objects to worker nodes
-    parallel::clusterExport(cl, c("X", "Y", "E", "tau", "h", "weighted",
+    parallel::clusterExport(cl, c("X", "Y", "E", "tau", "h", "weighted", 
                                  "metric", "distance_fn", "state_space_fn",
-                                 "pcLightweight", "relative"),
+                                 "pcLightweight", "relative"), 
                            envir = environment())
   }
-
+  
   # Main analysis loop
-  for (i in seq_along(numbers)) {
-    if (random) {
-      if (bootstrap > 1) {
+  for(i in seq_along(numbers)) {
+    if(random) {
+      if(bootstrap > 1) {
         # Parallel bootstrap analysis
-        if (n_cores > 1) {
+        if(n_cores > 1) {
           # Parallel computation of bootstrap samples
           bootstrap_results <- do.call(rbind, parallel::parLapply(cl, 1:bootstrap, function(b) {
-            idx <- sample(seq_along(X), numbers[i], replace = TRUE)
+            idx <- sample(1:length(X), numbers[i], replace = TRUE)
             samplex <- X[idx]
             sampley <- Y[idx]
-
+            
             tryCatch({
               pc_result <- pcLightweight(samplex, sampley, E, tau, h, weighted,
                                      metric = metric,
@@ -173,7 +173,7 @@ pcCrossValidation <- function(X, Y, E, tau, metric = "euclidean", h, weighted,
                                      state_space_fn = state_space_fn,
                                      verbose = FALSE,
                                      relative = relative)
-
+              
               c(pc_result$positive, pc_result$negative, pc_result$dark)
             }, error = function(e) {
               c(NA_real_, NA_real_, NA_real_)
@@ -182,11 +182,11 @@ pcCrossValidation <- function(X, Y, E, tau, metric = "euclidean", h, weighted,
         } else {
           # Sequential bootstrap computation
           bootstrap_results <- matrix(NA_real_, nrow = bootstrap, ncol = 3)
-          for (b in seq_len(bootstrap)) {
-            idx <- sample(seq_along(X), numbers[i], replace = TRUE)
+          for(b in 1:bootstrap) {
+            idx <- sample(1:length(X), numbers[i], replace = TRUE)
             samplex <- X[idx]
             sampley <- Y[idx]
-
+            
             tryCatch({
               pc_result <- pcLightweight(samplex, sampley, E, tau, h, weighted,
                                      metric = metric,
@@ -194,7 +194,7 @@ pcCrossValidation <- function(X, Y, E, tau, metric = "euclidean", h, weighted,
                                      state_space_fn = state_space_fn,
                                      verbose = FALSE,
                                      relative = relative)
-
+              
               bootstrap_results[b, ] <- c(pc_result$positive,
                                       pc_result$negative,
                                       pc_result$dark)
@@ -203,7 +203,7 @@ pcCrossValidation <- function(X, Y, E, tau, metric = "euclidean", h, weighted,
             })
           }
         }
-
+        
         # Calculate statistics, handling NAs appropriately
         results[i, , ] <- rbind(
           colMeans(bootstrap_results, na.rm = TRUE),
@@ -216,7 +216,7 @@ pcCrossValidation <- function(X, Y, E, tau, metric = "euclidean", h, weighted,
         idx <- sample(1:(length(X) - numbers[i] + 1), 1)
         samplex <- X[idx:(idx + numbers[i] - 1)]
         sampley <- Y[idx:(idx + numbers[i] - 1)]
-
+        
         tryCatch({
           pc_result <- pcLightweight(samplex, sampley, E, tau, h, weighted,
                                  metric = metric,
@@ -224,7 +224,7 @@ pcCrossValidation <- function(X, Y, E, tau, metric = "euclidean", h, weighted,
                                  state_space_fn = state_space_fn,
                                  verbose = FALSE,
                                  relative = relative)
-
+          
           results[i, 1, ] <- c(pc_result$positive,
                             pc_result$negative,
                             pc_result$dark)
@@ -236,7 +236,7 @@ pcCrossValidation <- function(X, Y, E, tau, metric = "euclidean", h, weighted,
       # Sequential sampling
       samplex <- X[1:numbers[i]]
       sampley <- Y[1:numbers[i]]
-
+      
       tryCatch({
         pc_result <- pcLightweight(samplex, sampley, E, tau, h, weighted,
                                metric = metric,
@@ -244,7 +244,7 @@ pcCrossValidation <- function(X, Y, E, tau, metric = "euclidean", h, weighted,
                                state_space_fn = state_space_fn,
                                verbose = FALSE,
                                relative = relative)
-
+        
         results[i, 1, ] <- c(pc_result$positive,
                           pc_result$negative,
                           pc_result$dark)
@@ -252,12 +252,12 @@ pcCrossValidation <- function(X, Y, E, tau, metric = "euclidean", h, weighted,
         results[i, 1, ] <- c(NA_real_, NA_real_, NA_real_)
       })
     }
-
-    if (verbose) {
+    
+    if(verbose) {
       report_progress(i, length(numbers), "Cross-validation analysis", verbose)
     }
   }
-
+  
   # Return pc_cv object with modified structure
   result <- pc_cv(
     samples = numbers,
@@ -274,6 +274,6 @@ pcCrossValidation <- function(X, Y, E, tau, metric = "euclidean", h, weighted,
       relative = relative
     )
   )
-
+  
   return(result)
 }

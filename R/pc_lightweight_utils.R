@@ -17,17 +17,17 @@ compute_causality_measures <- function(results, weighted) {
       dark = NA_real_
     ))
   }
-
+  
   # Calculate total causality
   total_causality <- 1 - mean(results$noCausality, na.rm = TRUE)
-
+  
   # Calculate component measures (only using points where noCausality != 1)
   causality_indices <- which(results$noCausality != 1)
   if (length(causality_indices) > 0) {
     positive <- mean(results$Positive[causality_indices], na.rm = TRUE)
     negative <- mean(results$Negative[causality_indices], na.rm = TRUE)
     dark <- mean(results$Dark[causality_indices], na.rm = TRUE)
-
+    
     # Normalize (if needed)
     if (weighted && !anyNA(c(positive, negative, dark))) {
       total <- sum(c(positive, negative, dark))
@@ -42,12 +42,12 @@ compute_causality_measures <- function(results, weighted) {
     negative <- 0
     dark <- 0
   }
-
+  
   # Ensure all values are finite
   if (!all(is.finite(c(total_causality, positive, negative, dark)))) {
     warning("Some causality measures are not finite")
   }
-
+  
   list(
     total = total_causality,
     positive = positive,
@@ -57,7 +57,7 @@ compute_causality_measures <- function(results, weighted) {
 }
 
 #' Analyze Pattern Causality Between Time Series
-#'
+#' 
 #' @title Analyze Pattern Causality Between Time Series Using State Space Reconstruction
 #' @description Internal Function That Performs the Main Causality Analysis Loop
 #'
@@ -80,13 +80,13 @@ compute_causality_measures <- function(results, weighted) {
 #' @keywords internal
 #' @noRd
 analyze_causality <- function(spaces, matrices, components, check, h, weighted, verbose) {
-
+  
   real_loop <- numeric(0)
-
+  
   # Main analysis loop
   for(i in seq_along(check$al_loop_dur)) {
     current_point <- check$al_loop_dur[i]
-
+    
     if(!anyNA(c(spaces$Mx[current_point,], spaces$My[current_point + h,]))) {
       nn_info <- pastNNsInfo(
         CCSPAN = components$CCSPAN,
@@ -101,7 +101,7 @@ analyze_causality <- function(spaces, matrices, components, check, h, weighted, 
 
       if(!anyNA(nn_info$dists) && !anyNA(spaces$Dy[current_point, nn_info$times + h])) {
         real_loop <- c(real_loop, current_point)
-
+        
         proj_info <- projectedNNsInfo(
           My = spaces$My,
           Dy = spaces$Dy,
@@ -111,7 +111,7 @@ analyze_causality <- function(spaces, matrices, components, check, h, weighted, 
           i = current_point,
           h = h
         )
-
+        
         # Update matrices
         matrices <- update_matrices(
           matrices, spaces, nn_info, proj_info,
@@ -119,16 +119,16 @@ analyze_causality <- function(spaces, matrices, components, check, h, weighted, 
         )
       }
     }
-
+    
     if(verbose) {
       report_progress(i, length(check$al_loop_dur), "Analyzing causality patterns", verbose)
     }
   }
-
+  
   if(verbose) {
     cat("\nComputing final results...\n")
   }
-
+  
   # Calculate causality spectrum
   if(length(real_loop) > 0) {
     spectrums <- compute_causality_spectrums(matrices$pc_matrices, real_loop, components$hashedpatterns, spaces$Mx[,1])
@@ -150,6 +150,6 @@ analyze_causality <- function(spaces, matrices, components, check, h, weighted, 
       real_loop = real_loop
     )
   }
-
+  
   results
 }

@@ -47,9 +47,9 @@ Before estimating the causality matrix, it is crucial to determine the optimal p
 ```{r eval=FALSE}
 dataset <- DJS[,-1] # remove the date column
 params <- optimalParametersSearch(
-  Emax = 3,
-  tauMax = 3,
-  metric = "euclidean",
+  Emax = 3, 
+  tauMax = 3, 
+  metric = "euclidean", 
   dataset = dataset,
   verbose = FALSE
 )
@@ -60,7 +60,7 @@ With the optimal parameters identified, we can now estimate the pattern causalit
 
 ```{r eval=FALSE}
 result <- pcMatrix(
-  dataset = dataset,
+  dataset = dataset, 
   E = 3,           # Embedding dimension
   tau = 1,         # Time delay
   metric = "euclidean",

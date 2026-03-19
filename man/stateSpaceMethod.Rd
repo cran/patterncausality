@@ -3,11 +3,14 @@
 \name{stateSpaceMethod}
 \alias{stateSpaceMethod}
 \alias{stateSpaceMethod.default}
+\alias{stateSpaceMethod.custom}
 \title{State Space Reconstruction Interface}
 \usage{
-stateSpaceMethod(x, E, tau, method = NULL, ...)
+stateSpaceMethod(x, E, tau, ...)
 
-\method{stateSpaceMethod}{default}(x, E, tau, method = NULL, ...)
+\method{stateSpaceMethod}{default}(x, E, tau, ...)
+
+\method{stateSpaceMethod}{custom}(x, E, tau, method, ...)
 }
 \arguments{
 \item{x}{Input time series}
@@ -16,9 +19,9 @@ stateSpaceMethod(x, E, tau, method = NULL, ...)
 
 \item{tau}{Time delay (positive integer)}
 
-\item{method}{Optional custom function for state space reconstruction}
-
 \item{...}{Additional arguments passed to methods}
+
+\item{method}{Custom function for state space reconstruction}
 }
 \value{
 A list containing the reconstructed state space components
@@ -33,6 +36,8 @@ Generic Interface for State Space Reconstruction
 \section{Methods (by class)}{
 \itemize{
 \item \code{stateSpaceMethod(default)}: Default state space reconstruction
+
+\item \code{stateSpaceMethod(custom)}: Custom state space reconstruction
 
 }}
 \examples{

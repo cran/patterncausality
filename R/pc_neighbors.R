@@ -1,7 +1,7 @@
 #' Pattern Causality Neighbors Class
 #'
 #' @title Pattern Causality Neighbors Class
-#' @description S3 class for representing nearest neighbors information in pattern
+#' @description S3 class for representing nearest neighbors information in pattern 
 #' causality analysis. This class is used by both past and projected neighbor analysis.
 #'
 #' @param i Integer; reference point index
@@ -22,17 +22,17 @@ pc_neighbors <- function(i, times, dists, signatures, patterns, coordinates, wei
   if(!is.numeric(times) || !is.numeric(dists)) {
     stop("times and dists must be numeric vectors", call. = FALSE)
   }
-
+  
   # Convert signatures to matrix if it's a vector
   if(is.null(dim(signatures))) {
     signatures <- matrix(signatures, ncol = 1)
   }
-
+  
   # Convert coordinates to matrix if it's a vector
   if(is.null(dim(coordinates))) {
     coordinates <- matrix(coordinates, ncol = 2)  # For E=2 case
   }
-
+  
   if(!is.matrix(signatures) || !is.matrix(coordinates)) {
     stop("signatures and coordinates must be matrices", call. = FALSE)
   }
@@ -42,7 +42,7 @@ pc_neighbors <- function(i, times, dists, signatures, patterns, coordinates, wei
   if(!is.null(weights) && !is.numeric(weights)) {
     stop("weights must be NULL or a numeric vector", call. = FALSE)
   }
-
+  
   # Create object
   structure(
     list(
@@ -58,8 +58,7 @@ pc_neighbors <- function(i, times, dists, signatures, patterns, coordinates, wei
   )
 }
 
-#' @keywords internal
-#' @noRd
+#' @export
 print.pc_neighbors <- function(x, ...) {
   cat("Pattern Causality Nearest Neighbors Analysis\n")
   cat("------------------------------------------\n")
@@ -74,8 +73,7 @@ print.pc_neighbors <- function(x, ...) {
   cat("Coordinate dimension:", ncol(x$coordinates), "\n")
 }
 
-#' @keywords internal
-#' @noRd
+#' @export
 summary.pc_neighbors <- function(object, ...) {
   structure(
     list(
@@ -105,29 +103,4 @@ summary.pc_neighbors <- function(object, ...) {
     ),
     class = "summary.pc_neighbors"
   )
-}
-
-#' Print Method for pc_neighbors Summary
-#'
-#' @param x A summary.pc_neighbors object
-#' @param ... Additional arguments passed to print
-#' @return Invisibly returns the input object
-#' @keywords internal
-#' @noRd
-print.summary.pc_neighbors <- function(x, ...) {
-  cat("Nearest Neighbors Analysis Summary\n")
-  cat("--------------------------------\n")
-
-  if (!is.null(x$neighbor_stats)) {
-    cat("Neighbor Statistics:\n")
-    print(x$neighbor_stats, ...)
-    cat("\n")
-  }
-
-  if (!is.null(x$weight_stats)) {
-    cat("Weight Statistics:\n")
-    print(x$weight_stats, ...)
-  }
-
-  invisible(x)
-}
+} 

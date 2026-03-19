@@ -14,8 +14,8 @@ set.seed(123)
 X <- climate_indices$PNA
 Y <- climate_indices$NAO
 result <- pcCrossValidation(
-  X = X,
-  Y = Y,
+  X = X, 
+  Y = Y,  
   numberset = seq(100, 500, by = 10),
   E = 3,
   tau = 2,

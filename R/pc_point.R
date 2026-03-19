@@ -15,4 +15,4 @@ print.pc_point <- function(x, ...) {
   cat("  Nearest neighbors:", x$spans$nn, "\n")
   cat("  Common coordinates:", x$spans$cc, "\n")
   cat("  Prediction:", x$spans$pred, "\n")
-}
+} 
